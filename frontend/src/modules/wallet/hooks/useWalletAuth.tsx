@@ -61,7 +61,7 @@ export function useWalletAuth() {
       });
 
       let localStorageAddress = window.localStorage.getItem("walletAddress");
-
+      console.log(instance);
       if (localStorageAddress) {
         await instance.connect(localStorageAddress);
       } else {
@@ -85,6 +85,7 @@ export function useWalletAuth() {
       window.localStorage.setItem("user", JSON.stringify(user.data));
 
       const instanceProvider = new ComethProvider(instance);
+      console.log(instanceProvider, "instanceProvider");
 
       const contract = new ethers.Contract(
         COUNTER_CONTRACT_ADDRESS,
@@ -104,7 +105,7 @@ export function useWalletAuth() {
         instanceProvider.getSigner()
       );
 
-      console.log(courseNFTContract, "courseNFTContract");
+      console.log(profileContract, "profileContract");
 
       setCounterContract(contract);
       setAIProfileContract(profileContract);
@@ -113,6 +114,7 @@ export function useWalletAuth() {
       setIsConnected(true);
       setWallet(instance as any);
       setProvider(instanceProvider as any);
+      return { profileContract, courseContract };
     } catch (e) {
       displayError((e as Error).message);
     } finally {

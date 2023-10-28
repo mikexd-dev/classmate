@@ -9,7 +9,7 @@ const ConfettiComponent = (props: Props) => {
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   return (
     <div className="z-50">
-      <Confetti width={windowWidth} height={windowHeight} />
+      <Confetti width={windowWidth} height={windowHeight} gravity={0.02} />
     </div>
   );
 };

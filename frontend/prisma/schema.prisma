@@ -36,19 +36,21 @@ model Session {
 }
 
 model User {
-  id             String    @id @default(cuid())
+  id             String         @id @default(cuid())
   name           String?
   address        String?
-  email          String?   @unique
+  email          String?        @unique
   emailVerified  DateTime?
   image          String?
-  credits        Int       @default(10)
+  token          Int            @default(10)
   tokenProfileId Int?
-
-  accounts Account[]
-  sessions Session[]
-  courses  UserProgress[]
-  Course   Course[]
+  grade          String?
+  topics         String[]
+  onBoardingQuiz Json?
+  accounts       Account[]
+  sessions       Session[]
+  courses        UserProgress[]
+  Course         Course[]
 }
 
 // course contains many units

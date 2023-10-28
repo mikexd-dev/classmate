@@ -27,6 +27,8 @@ const DashboardPage = async (props: Props) => {
     },
   });
 
+  console.log(courses, "course");
+
   // find all userprogress of a user
   const userProgress = await prisma.userProgress.findMany({
     where: {
@@ -42,30 +44,26 @@ const DashboardPage = async (props: Props) => {
         <h1 className="font-bold text-center py-2">Courses</h1>
         <Separator className="flex-[1] mb-5" />
         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
-          {courses.map((item: any) =>
-            item.courseTokenId < 3 || item.courseTokenId === 6 ? (
-              <></>
-            ) : (
-              // check if userprogress course includes course id
-              // if it does, then show the progress
-              // else show 0
-              <CourseCard
-                key={item.id}
-                id={item.id}
-                title={item.name}
-                imageUrl={item.image!}
-                chaptersLength={item.units.length}
-                users={item.users.length!}
-                progress={
-                  userProgress.find((up) => up.courseId === item.id)
-                    ? userProgress.find((up) => up.courseId === item.id)
-                        ?.progress!
-                    : 0
-                }
-                category={"category"}
-              />
-            )
-          )}
+          {courses.map((item: any) => (
+            // check if userprogress course includes course id
+            // if it does, then show the progress
+            // else show 0
+            <CourseCard
+              key={item.id}
+              id={item.id}
+              title={item.name}
+              imageUrl={item.image!}
+              chaptersLength={item.units.length}
+              users={item.users.length!}
+              progress={
+                userProgress.find((up) => up.courseId === item.id)
+                  ? userProgress.find((up) => up.courseId === item.id)
+                      ?.progress!
+                  : 0
+              }
+              category={"category"}
+            />
+          ))}
         </div>
       </div>
     </div>

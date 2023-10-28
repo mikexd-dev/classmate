@@ -1,12 +1,13 @@
 import { Icons } from "@/components/generic/Icons";
 import { ComethWallet } from "@cometh/connect-sdk";
 import { Button } from "./ui/button";
+import { ChevronRight } from "lucide-react";
 
 interface ConnectWalletProps {
   connectionError: string | null;
   isConnecting: boolean;
   isConnected: boolean;
-  connect: () => Promise<void>;
+  connect: () => Promise<any>;
   wallet: ComethWallet;
 }
 
@@ -37,7 +38,12 @@ function ConnectWallet({
         </>
       );
     } else {
-      return "Retrieve your Wallet";
+      return (
+        <>
+          <div>Get A Wallet</div>
+          <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
+        </>
+      );
     }
   };
 
@@ -46,15 +52,19 @@ function ConnectWallet({
       {!connectionError ? (
         <Button
           disabled={isConnecting || isConnected || !!connectionError}
-          // className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100 disabled:bg-white"
+          className="p-8 px-10 rounded-full text-xl mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
           onClick={connect}
+          style={{ cursor: "pointer !important" }}
         >
           {getTextButton()}
         </Button>
       ) : (
-        <p className="flex items-center justify-center text-gray-900 bg-red-50">
-          Connection denied
-        </p>
+        <Button
+          disabled={true}
+          className="p-8 px-10 rounded-full text-xl mr-5 bg-red-600 drop-shadow-md cursor-pointer"
+        >
+          Connection Denied
+        </Button>
       )}
     </>
   );

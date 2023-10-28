@@ -10,7 +10,7 @@ declare module "next-auth" {
       name: string;
       email: string;
       address: any;
-      credits: number;
+      token: number;
       image: any;
       emailVerified: any;
       tokenProfileId: number;
@@ -25,7 +25,7 @@ declare module "next-auth/jwt" {
     email: string;
     address: any;
     image: any;
-    credits: number;
+    token: number;
     emailVerified: any;
     tokenProfileId: number;
   }
@@ -47,10 +47,9 @@ export const authOptions: NextAuthOptions = {
       if (db_user) {
         token.id = db_user.id;
         token.address = db_user.address;
-        token.credits = db_user.credits;
+        token.token = db_user.token;
         token.id = db_user.id;
         token.emailVerified = db_user.emailVerified;
-        token.credits = db_user.credits;
         token.address = db_user.address;
         token.tokenProfileId = db_user.tokenProfileId || 0;
       }
@@ -64,7 +63,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email;
         session.user.image = token.picture;
         session.user.emailVerified = token.emailVerified;
-        session.user.credits = token.credits;
+        session.user.token = token.token;
         session.user.address = token.address;
         session.user.tokenProfileId = token.tokenProfileId;
       }
