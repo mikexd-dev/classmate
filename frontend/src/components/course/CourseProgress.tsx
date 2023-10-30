@@ -23,17 +23,9 @@ export const CourseProgress = ({
   size,
 }: CourseProgressProps) => {
   return (
-    <div>
-      <Progress className="h-2" value={value} variant={variant} />
-      <p
-        className={cn(
-          "font-medium mt-2 text-sky-700",
-          colorByVariant[variant || "default"],
-          sizeByVariant[size || "default"]
-        )}
-      >
-        {Math.round(value)}% Complete
-      </p>
+    <div className="flex flex-col items-center justify-center">
+      <Progress className="h-2 w-40" value={value} variant={variant} />
+      <p className="text-xs mt-2 text-black">{Math.round(value)}% Complete</p>
     </div>
   );
 };

@@ -6,11 +6,19 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import { useToast } from "../ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowsRotate,
+  faCheckCircle,
+  faCircleXmark,
+  faRotateRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   chapter: Chapter;
   chapterIndex: number;
+  unitId: string;
   completedChapters: Set<String>;
   setCompletedChapters: React.Dispatch<React.SetStateAction<Set<String>>>;
 };
@@ -20,16 +28,26 @@ export type ChapterCardHandler = {
 };
 
 const ChapterCard = React.forwardRef<ChapterCardHandler, Props>(
-  ({ chapter, chapterIndex, setCompletedChapters, completedChapters }, ref) => {
+  (
+    { chapter, chapterIndex, setCompletedChapters, completedChapters, unitId },
+    ref
+  ) => {
     const { toast } = useToast();
     const [success, setSuccess] = React.useState<boolean | null>(null);
 
     const { mutate: retrieveChapter, isLoading } = useMutation({
       mutationFn: async (data) => {
-        const response = await axios.post("/api/chapter/retrieve", {
-          chapterId: chapter.id,
-        });
-        return response.data;
+        try {
+          const response = await axios.post("/api/chapter/retrieve", {
+            chapterId: chapter.id,
+            unitId,
+          });
+          return response.data;
+        } catch (e: any) {
+          console.log(e, "error");
+          setSuccess(false);
+          throw new Error(e);
+        }
       },
     });
 
@@ -60,6 +78,7 @@ const ChapterCard = React.forwardRef<ChapterCardHandler, Props>(
             addChapterIdToSet();
           },
           onError: () => {
+            console.log("error");
             setSuccess(false);
             toast({
               title: "Error",
@@ -75,16 +94,24 @@ const ChapterCard = React.forwardRef<ChapterCardHandler, Props>(
     return (
       <div
         key={chapterIndex}
-        className={cn("px-4 py-2 mt-2 rounded flex justify-between", {
-          "bg-secondary": success === null,
-          "bg-red-500 backdrop-filter backdrop-blur-sm bg-opacity-40":
-            success === false,
-          "bg-green-500 backdrop-filter backdrop-blur-sm bg-opacity-40":
-            success === true,
-        })}
+        className={cn("px-4 pt-2 rounded flex justify-start items-center", {})}
       >
-        <h5 className="font-light">{chapter.name}</h5>
-        {isLoading && <Loader2 className="animate-spin" />}
+        {isLoading && <Loader2 className="animate-spin h-4 w-4" />}
+        {!isLoading && success && (
+          <FontAwesomeIcon icon={faCheckCircle} style={{ color: "#16a34a" }} />
+        )}
+        {!isLoading && success === false && (
+          <FontAwesomeIcon icon={faCircleXmark} style={{ color: "#cc3524" }} />
+        )}
+        <h5 className="font-light pl-3">{chapter.name}</h5>
+        {!isLoading && !success && (
+          <FontAwesomeIcon
+            icon={faRotateRight}
+            className="pl-2"
+            style={{ color: "grey", cursor: "pointer" }}
+            onClick={() => retrieveChapter()}
+          />
+        )}
       </div>
     );
   }

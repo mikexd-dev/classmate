@@ -44,8 +44,10 @@ export async function POST(req: Request, res: Response) {
     // if (session.user.credits <= 0 && !isPro) {
     //   return new NextResponse("no credits", { status: 402 });
     // }
+
     const body = await req.json();
-    const { title } = body;
+    const { title, wrongAnswers } = body;
+    console.log(title, wrongAnswers, "title, wrongAnswers");
 
     type outputUnits = {
       title: string;
@@ -66,19 +68,37 @@ export async function POST(req: Request, res: Response) {
     };
 
     let units: any = await strict_output(
-      "You are an AI capable of curating course content, coming up with relevant units titles, when given a course title",
+      `You are a very experienced teacher in the science domain, predominantly teaching secondary school science subject that may include biology, chemistry and physics. You are capable of curating course content, coming up with relevant units titles, when given a course title of a ${
+        session?.user?.grade
+      } student. The student wishes to learn the following topics (separated by comma): ${JSON.stringify(
+        session?.user?.topics
+      )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
+        wrongAnswers
+      )}. These could be the topics that the student is weak in.`,
       new Array(3).fill(
-        `It is your job to create a unit about ${title}. The user has requested to create units for each of the course.`
+        `It is your job to create a unit about ${title} of a ${
+          session?.user?.grade
+        } student. The student wishes to learn the following topics (separated by comma): ${JSON.stringify(
+          session?.user?.topics
+        )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
+          wrongAnswers
+        )}. The user has requested to create units for each of the course. These could be the topics that the student is weak in.`
       ),
       {
         unit: "title of the unit",
       }
     );
 
-    // units = units.map((obj: any) => obj.unit);
+    console.log(units, "units");
 
     let output_units: outputUnits = await strict_output(
-      "You are an AI capable of curating course content, coming up with relevant chapter titles, and finding relevant youtube videos for each chapter. You are limited to just 3 units.",
+      `You are an AI capable of curating course content of a ${
+        session?.user?.grade
+      } student. The student wishes to learn the following topics (separated by comma): ${JSON.stringify(
+        session?.user?.topics
+      )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
+        wrongAnswers
+      )}. These could be the topics that the student is weak in., coming up with relevant chapter titles, and finding relevant youtube videos for each chapter. You are limited to a minimum and maximum 3 units. Do not have more or less, just 3 units per chapter`,
       new Array(3).fill(
         `It is your job to create a course about ${title}. The user has requested to create chapters for each of the units. Then, for each chapter, provide a detailed youtube search query that can be used to find an informative educationalvideo for each chapter. Each query should give an educational informative course in youtube. `
       ),
@@ -89,13 +109,13 @@ export async function POST(req: Request, res: Response) {
       }
     );
 
-    const imageSearchTerm = await strict_output(
-      "you are an AI capable of finding the most relevant image for a course",
-      `Please provide a good image search term for the title of a course about ${title}. This search term will be fed into the Youtube API to fetch the youtube thumbnail, so make sure it is a good search term that will return good results.`,
-      {
-        image_search_term: "a good search term for the title of the course",
-      }
-    );
+    // const imageSearchTerm = await strict_output(
+    //   "you are an AI capable of finding the most relevant image for a course",
+    //   `Please provide a good image search term for the title of a course about ${title}. This search term will be fed into the Youtube API to fetch the youtube thumbnail, so make sure it is a good search term that will return good results.`,
+    //   {
+    //     image_search_term: "a good search term for the title of the course",
+    //   }
+    // );
 
     // const image_description = await generateImagePrompt(title);
     // const course_image: any = await generateImage(image_description);
@@ -180,13 +200,27 @@ export async function POST(req: Request, res: Response) {
     //   },
     // });
 
+    const courseDetail = await prisma.course.findUnique({
+      where: {
+        id: course.id,
+      },
+      include: {
+        units: {
+          include: {
+            chapters: true,
+          },
+        },
+      },
+    });
+
     return NextResponse.json({
-      course_id: course.id,
+      course: courseDetail,
     });
   } catch (error) {
     if (error instanceof ZodError) {
       return new NextResponse("invalid body", { status: 400 });
     }
     console.error(error);
+    return new NextResponse("invalid body", { status: 500 });
   }
 }

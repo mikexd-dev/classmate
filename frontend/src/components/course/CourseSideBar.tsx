@@ -3,6 +3,12 @@ import { Chapter, Course, Unit } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
 import { Separator } from "@/components/ui/separator";
+import {
+  faCheckCircle,
+  faEdit,
+  faPen,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type Props = {
   course: Course & {
@@ -15,34 +21,65 @@ type Props = {
 
 const CourseSideBar = async ({ course, currentChapterId }: Props) => {
   return (
-    <div className="max-w-[230px] p-6 rounded-r-3xl bg-secondary">
-      <h1 className="text-lg font-bold">{course.name}</h1>
+    <div className="max-w-[260px] p-6 rounded-r-3xl ">
+      {/* <h1 className="text-lg font-bold">{course.name}</h1> */}
       {course.units.map((unit, unitIndex) => {
+        if (unitIndex > 2) return;
         return (
           <div key={unit.id} className="mt-4">
-            <div className="text-sm uppercase text-secondary-foreground/60">
-              Unit {unitIndex + 1}
-            </div>
-            <h2 className="text-xs font-semibold">
-              {" "}
+            <h2 className="text-sm font-semibold mb-2">
               {unit?.name.replace(/^.*:/, "") || unit.name}
             </h2>
             {unit.chapters.map((chapter, chapterIndex) => {
+              if (chapterIndex > 2) return;
               return (
-                <div key={chapter.id}>
+                <div
+                  key={chapter.id}
+                  className={cn(
+                    "flex flex-row items-center justify-start p-2 pl-3",
+                    {
+                      "bg-stone-200 font-bold text-black rounded-lg ":
+                        chapter.id === currentChapterId,
+                    }
+                  )}
+                >
+                  {
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      style={{ color: "black" }}
+                      className="h-3 w-3 mr-2"
+                    />
+                  }
                   <Link
                     href={`/course/${course.id}/${unitIndex}/${chapterIndex}`}
-                    className={cn("text-secondary-foreground/60 text-xs ", {
-                      "text-green-500 font-bold leading-3":
-                        chapter.id === currentChapterId,
-                    })}
+                    className={cn("text-black text-sm ")}
                   >
-                    {chapter?.name.replace(/^.*:/, "") || chapter.name}
+                    {chapter?.name.replace(/^.*:/, "").substring(0, 20) ||
+                      chapter.name}
                   </Link>
                 </div>
               );
             })}
-            <Separator className="mt-2 text-gray-500 bg-gray-500" />
+            <div
+              className={cn(
+                "flex flex-row items-center justify-start p-2 pl-3",
+                {}
+              )}
+            >
+              {
+                <FontAwesomeIcon
+                  icon={faPen}
+                  style={{ color: "black" }}
+                  className="h-3 w-3 mr-2"
+                />
+              }
+              <Link
+                href={`/course/${course.id}/${unitIndex}/quiz`}
+                className={cn("text-black text-sm ")}
+              >
+                Quiz
+              </Link>
+            </div>
           </div>
         );
       })}

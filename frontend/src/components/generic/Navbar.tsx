@@ -13,27 +13,28 @@ import { profile } from "console";
 
 type Props = {};
 
-const Navbar = async (props: Props) => {
+const Navbar = async ({ children }: any) => {
   // const [open, setOpen] = React.useState(false);
   let profileTokenid: any = null;
   const session = await getAuthSession();
   // profileTokenid = session?.user?.tokenProfileId as any;
 
   return (
-    <nav className="fixed inset-x-0 top-0 bg-white dark:bg-gray-950 z-[10] h-fit border-b border-zinc-300 py-2">
+    <nav className="fixed inset-x-0 top-0 bg-white z-[10] h-fit py-6">
       {/* <ProfileDialog
         open={open}
         setOpen={setOpen}
         profileTokenId={profileTokenid}
       /> */}
-      <div className="flex items-center justify-center h-full gap-2 px-8 mx-auto sm:justify-between max-w-7xl">
+      <div className="flex items-center justify-center h-full gap-2 px-2 mx-auto sm:justify-between max-w-7xl">
         <Link href="/dashboard" className="items-center hidden gap-2 sm:flex">
-          <div className="font-light text-2xl flex flex-row">
-            <div className="font-medium">AI</div>ducation
+          <div className="font-light text-2xl flex flex-row pl-8">
+            <div className="font-medium">Crypto</div>Hack
           </div>
         </Link>
+        {children}
         <div className="flex items-center">
-          {session?.user && (
+          {/* {session?.user && (
             <>
               <Link
                 href="/credentials"
@@ -47,8 +48,8 @@ const Navbar = async (props: Props) => {
                 </Button>
               </Link>
             </>
-          )}
-          <ThemeToggle className="mr-3" />
+          )} */}
+          {/* <ThemeToggle className="mr-3" /> */}
           <div className="flex items-center">
             {session?.user ? (
               // eslint-disable-next-line

@@ -15,72 +15,6 @@ import { useToast } from "@/components/ui/use-toast";
 
 type Props = {};
 
-const onboardingSteps = {
-  "buddy-selection": {
-    title: "Learning Buddy",
-    description:
-      "Select your first learning buddy. He will help you in your learning journey.. the fun way!",
-    type: "image",
-    content: [
-      {
-        profleName: "Gang",
-        profileImage: "gang.svg",
-        profileDescription: "Friendly Soul",
-      },
-      {
-        profleName: "Mike",
-        profileImage: "mike.svg",
-        profileDescription: "Rebellious Hunk",
-      },
-      {
-        profleName: "Terry",
-        profileImage: "terry.svg",
-        profileDescription: "Funny Bunny",
-      },
-    ],
-    button: "Next",
-  },
-  "grade-selection": {
-    title: "Grade",
-    description: "Which science grade are you in?",
-    type: "radio",
-    content: ["Primary 3", "Primary 4", "Primary 5", "Primary 6"],
-    button: "Next",
-  },
-  "topics-selection": {
-    title: "Topics",
-    description:
-      "Help us to talior your learning plan by sharing with us on the topics you have learnt in school.",
-    type: "checkbox",
-    content: [
-      "Cycle in plants",
-      "Interaction of forces",
-      "Energy Forms",
-      "Human Digestive System",
-      "I have not started on any topics yet",
-    ],
-    button: "Next",
-  },
-  quiz: {
-    title: "Quiz",
-    description:
-      "Quiz time! Here’s a short quiz to help us create your personalised learning course!",
-    subDescription:
-      "They are 10 short questions that will take you less than 5 minutes to complete them. It will earn you coins to redeem other learning buddies too!",
-    type: "landing",
-    content: [], // to be generated
-    button: "I'm Ready",
-    points: 20,
-  },
-  "course-generation": {
-    title: "Loading...",
-    description: "Generating your learning plan...",
-    type: "generating",
-    content: [], // to be generated
-    button: "Let's Go!",
-  },
-};
-
 export default function Page(props: Props) {
   const {
     isConnecting,
@@ -236,37 +170,36 @@ export default function Page(props: Props) {
               </div>
             )}
             {/* only show selected buddy */}
-            {isMinting ||
-              (isMintingComplete && (
-                <div className="flex flex-col justify-center items-center pt-7">
-                  <div
-                    className={cn(
-                      "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
-                      {
-                        "border-purple-600 border-4 rounded-3xl p-1":
-                          profile === profile,
-                      }
-                    )}
-                  >
-                    <Player
-                      autoplay
-                      loop
-                      src="https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json"
-                      style={{
-                        height: "180px",
-                        width: "180px",
-                        borderRadius: "24px",
-                        border: "3px solid black",
-                      }}
-                      className="hover:bg-sky-700"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center justify-center pt-3">
-                    <div className="text-2xl font-semibold">Gang</div>
-                    <div className="text-xl font-normal">Friendly Soul</div>
-                  </div>
+            {(isMinting || isMintingComplete) && (
+              <div className="flex flex-col justify-center items-center pt-7">
+                <div
+                  className={cn(
+                    "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
+                    {
+                      "border-purple-600 border-4 rounded-3xl p-1":
+                        profile === profile,
+                    }
+                  )}
+                >
+                  <Player
+                    autoplay
+                    loop
+                    src="https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json"
+                    style={{
+                      height: "180px",
+                      width: "180px",
+                      borderRadius: "24px",
+                      border: "3px solid black",
+                    }}
+                    className="hover:bg-sky-700"
+                  />
                 </div>
-              ))}
+                <div className="flex flex-col items-center justify-center pt-3">
+                  <div className="text-2xl font-semibold">Gang</div>
+                  <div className="text-xl font-normal">Friendly Soul</div>
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex flex-row items-between justify-between w-full">
             <Link href={"/onboarding/wallet"}>

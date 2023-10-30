@@ -22,58 +22,66 @@ const FormSchema = z.object({
   }),
 });
 
-export function GradeForm() {
+export function GradeForm({ setGrade }: any) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  function onChange(input: any) {
+    console.log(input.target.value);
+    setGrade(input.target.value);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onChange={onChange} className="w-full space-y-6">
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>Notify me about...</FormLabel>
+              <FormLabel>
+                <div className="font-semibold text-3xl pb-5">
+                  What science grade are you in?
+                </div>
+              </FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="flex flex-col space-y-1"
+                  className="flex flex-col space-y-4"
                 >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormItem className="flex items-center space-x-3 space-y-0 ">
                     <FormControl>
-                      <RadioGroupItem value="all" />
+                      <RadioGroupItem value="Secondary 1" />
                     </FormControl>
-                    <FormLabel className="font-normal">
-                      All new messages
+                    <FormLabel className="text-xl font-semibold">
+                      Secondary 1
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem value="mentions" />
+                      <RadioGroupItem value="Secondary 2" />
                     </FormControl>
-                    <FormLabel className="font-normal">
-                      Direct messages and mentions
+                    <FormLabel className="text-xl font-semibold">
+                      Secondary 2
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem value="none" />
+                      <RadioGroupItem value="Secondary 3" />
                     </FormControl>
-                    <FormLabel className="font-normal">Nothing</FormLabel>
+                    <FormLabel className="text-xl font-semibold">
+                      Secondary 3
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="Secondary 4" />
+                    </FormControl>
+                    <FormLabel className="text-xl font-semibold">
+                      Secondary 4
+                    </FormLabel>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -81,7 +89,6 @@ export function GradeForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );

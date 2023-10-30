@@ -1,4 +1,3 @@
-import CompanionChat from "@/components/course/CompanionChat";
 import { CourseProgress } from "@/components/course/CourseProgress";
 import CourseSideBar from "@/components/course/CourseSideBar";
 import MainVideoSummary from "@/components/course/MainVideoSummary";
@@ -63,25 +62,16 @@ const CoursePage = async ({ params: { slug } }: Props) => {
 
   return (
     <div className="p-10">
-      <Navbar>
-        <ProgressUpdate
-          unit={unitIndex}
-          chapter={chapterIndex}
-          course={course}
-          courseId={courseId}
-          courseTokenId={course.courseTokenId}
-          profileTokenId={session?.user?.tokenProfileId!}
-        />
-      </Navbar>
-      {/* <div className="flex flex-row justify-center items-center mt-5">
+      <Navbar />
+      <div className="flex flex-row justify-center items-center mt-5">
         <div className="flex items-center px-2 py-1 mt-2 border-none bg-orange-100 text-xs rounded-xl ">
           <Info className="w-5 mr-3 text-orange-400" />
           <div className="font-normal">
             Note: Complete the Course Progress to redeem the course NFT!
           </div>
         </div>
-      </div> */}
-      <div className="flex flex-row space-x-8 justify-end items-start px-8 pt-16 mx-auto sm:justify-between ">
+      </div>
+      <div className="flex flex-row space-x-5 justify-end items-start px-8 pt-5 mx-auto sm:justify-between max-w-7xl">
         <CourseSideBar course={course} currentChapterId={chapter.id} />
         <div className="flex-[3]">
           <MainVideoSummary
@@ -91,19 +81,19 @@ const CoursePage = async ({ params: { slug } }: Props) => {
             unitIndex={unitIndex}
           />
         </div>
-        <CompanionChat />
-        {/* {chapter.questions.length > 0 && <QuizCards chapter={chapter} />} */}
+
+        {chapter.questions.length > 0 && <QuizCards chapter={chapter} />}
       </div>
 
       <div className="px-8 mx-auto sm:justify-between max-w-7xl">
-        {/* <ProgressUpdate
+        <ProgressUpdate
           unit={unitIndex}
           chapter={chapterIndex}
           course={course}
           courseId={courseId}
           courseTokenId={course.courseTokenId}
           profileTokenId={session?.user?.tokenProfileId!}
-        /> */}
+        />
         {/* <div className="flex pb-8 flex-row justify-between ">
           {prevChapter && (
             <Link

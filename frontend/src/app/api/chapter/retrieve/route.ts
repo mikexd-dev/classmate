@@ -14,12 +14,14 @@ export const maxDuration = 60;
 
 const bodyParser = z.object({
   chapterId: z.string(),
+  unitId: z.string(),
 });
 
 export async function POST(req: Request, res: Response) {
   try {
     const body = await req.json();
-    const { chapterId } = bodyParser.parse(body);
+    const { chapterId, unitId } = bodyParser.parse(body);
+    console.log(unitId, "unitId");
     const chapter = await prisma.chapter.findUnique({
       where: {
         id: chapterId,
@@ -69,6 +71,7 @@ export async function POST(req: Request, res: Response) {
           answer: question.answer,
           options: JSON.stringify(options),
           chapterId: chapterId,
+          unitId: unitId,
         };
       }),
     });

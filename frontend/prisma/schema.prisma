@@ -93,9 +93,10 @@ model Unit {
   id       String @id @default(cuid())
   courseId String
 
-  name     String
-  course   Course    @relation(fields: [courseId], references: [id])
-  chapters Chapter[]
+  name      String
+  course    Course     @relation(fields: [courseId], references: [id])
+  chapters  Chapter[]
+  questions Question[]
 
   @@index([courseId], name: "courseId")
 }
@@ -122,6 +123,8 @@ model Question {
   answer   String  @db.VarChar(3000)
   options  String  @db.VarChar(3000)
   chapter  Chapter @relation(fields: [chapterId], references: [id])
+  Unit     Unit    @relation(fields: [unitId], references: [id])
+  unitId   String
 
   @@index([chapterId], name: "chapterId")
 }

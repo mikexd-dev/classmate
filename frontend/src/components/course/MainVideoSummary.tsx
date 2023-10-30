@@ -16,19 +16,19 @@ const MainVideoSummary = ({
 }: Props) => {
   return (
     <div className="flex-[2]">
-      <h4 className="text-sm uppercase text-secondary-foreground/60">
+      {/* <h4 className="text-sm uppercase text-secondary-foreground/60">
         Unit {unitIndex + 1} &bull; Chapter {chapterIndex + 1}
-      </h4>
-      <h1 className="text-2xl font-light">{chapter.name}</h1>
+      </h4> */}
+      {/* <h1 className="text-2xl font-light">{chapter.name}</h1> */}
       <iframe
         title="chapter video"
-        className="w-full mt-4 aspect-video max-h-[24rem]"
+        className="w-full mt-4 aspect-video max-h-[24rem] rounded-3xl drop-shadow-md"
         src={`https://www.youtube.com/embed/${chapter.videoId}`}
         allowFullScreen
       />
-      <div className="mt-4">
-        <h3 className="text-xl font-medium">Summary</h3>
-        <p className="mt-2 text-secondary-foreground/80 text-sm">
+      <div className="mt-8">
+        <h3 className="text-2xl font-medium">🥥 In a Nutshell</h3>
+        <p className="mt-2 text-secondary-foreground/80 text-base">
           {chapter.summary}
         </p>
       </div>

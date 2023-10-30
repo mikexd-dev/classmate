@@ -209,7 +209,7 @@ const ProgressUpdate = ({
           )}
         </DialogContent>
       </Dialog>
-
+      {/* 
       {completed ? (
         <Button
           onClick={() => progressUpdate()}
@@ -222,7 +222,7 @@ const ProgressUpdate = ({
         <Button onClick={() => progressUpdate()} className="w-72">
           I have finished this chapter!
         </Button>
-      )}
+      )} */}
     </div>
   );
 };

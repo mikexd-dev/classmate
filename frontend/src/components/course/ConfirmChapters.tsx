@@ -1,11 +1,12 @@
 "use client";
 import { Chapter, Course, Unit } from "@prisma/client";
-import React from "react";
+import React, { useEffect } from "react";
 import ChapterCard, { ChapterCardHandler } from "./ChapterCard";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   course: Course & {
@@ -13,10 +14,13 @@ type Props = {
       chapters: Chapter[];
     })[];
   };
+  setStartCourse: any;
 };
 
-const ConfirmChapters = ({ course }: Props) => {
+const ConfirmChapters = ({ course, setStartCourse }: Props) => {
   const [loading, setLoading] = React.useState(false);
+  const router = useRouter();
+  const [chapterCount, setChapterCount] = React.useState(0);
   const chapterRefs: Record<string, React.RefObject<ChapterCardHandler>> = {};
   course.units.forEach((unit) => {
     unit.chapters.forEach((chapter) => {
@@ -33,18 +37,41 @@ const ConfirmChapters = ({ course }: Props) => {
     }, 0);
   }, [course.units]);
 
-  console.log(totalChaptersCount, completedChapters.size);
+  useEffect(() => {
+    // wait for 1 second before generating course
+    // to allow for all the chapters to be loaded
+    let count = 0;
+    setTimeout(() => {
+      Object.values(chapterRefs).forEach((ref) => {
+        ref.current?.triggerLoad();
+        count += 1;
+      });
+      setChapterCount(count);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    console.log(totalChaptersCount, completedChapters.size, chapterCount);
+    if (completedChapters.size === 9) {
+      console.log(completedChapters, "completed");
+      setStartCourse(true);
+    }
+  }, [completedChapters.size, totalChaptersCount]);
+  // console.log(completedChapters, "completed");
+
   return (
     <div className="w-full ">
       {course.units.map((unit, unitIndex) => {
+        if (unitIndex > 2) return;
         return (
           <div key={unit.id} className="mt-2">
             {/* <h2 className="text-sm uppercase text-secondary-foreground/60 font-medium">
               Unit {unitIndex + 1}
             </h2> */}
             <h3 className="text-md font-medium">{unit.name}</h3>
-            <div className="mt-3">
+            <div className="mt-1">
               {unit.chapters.map((chapter, chapterIndex) => {
+                if (chapterIndex > 2) return;
                 return (
                   <ChapterCard
                     completedChapters={completedChapters}
@@ -53,6 +80,7 @@ const ConfirmChapters = ({ course }: Props) => {
                     key={chapter.id}
                     chapter={chapter}
                     chapterIndex={chapterIndex}
+                    unitId={unit.id}
                   />
                 );
               })}
@@ -60,47 +88,20 @@ const ConfirmChapters = ({ course }: Props) => {
           </div>
         );
       })}
-      <div className="flex items-center justify-center mt-10">
-        <Separator className="flex-[1]" />
-        <div className="flex items-center mx-4">
-          <Link
-            href="/dashboard"
-            className={buttonVariants({
-              variant: "secondary",
-            })}
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" strokeWidth={4} />
-            Back
-          </Link>
-          {totalChaptersCount === completedChapters.size ? (
-            <Link
-              className={buttonVariants({
-                className: "ml-4 font-semibold",
-              })}
-              href={`/course/${course.id}/0/0`}
-            >
-              Save & Continue
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Link>
-          ) : (
-            <Button
-              type="button"
-              className="ml-4 font-semibold"
-              disabled={loading}
-              onClick={() => {
-                setLoading(true);
-                Object.values(chapterRefs).forEach((ref) => {
-                  ref.current?.triggerLoad();
-                });
-              }}
-            >
-              Generate
-              <ChevronRight className="w-4 h-4 ml-2" strokeWidth={4} />
-            </Button>
-          )}
-        </div>
-        <Separator className="flex-[1]" />
-      </div>
+      {/* <Button
+        type="button"
+        className="ml-4 font-semibold"
+        disabled={loading}
+        onClick={() => {
+          setLoading(true);
+          Object.values(chapterRefs).forEach((ref) => {
+            ref.current?.triggerLoad();
+          });
+        }}
+      >
+        Generate
+        <ChevronRight className="w-4 h-4 ml-2" strokeWidth={4} />
+      </Button> */}
     </div>
   );
 };

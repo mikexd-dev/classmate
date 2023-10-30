@@ -14,6 +14,9 @@ declare module "next-auth" {
       image: any;
       emailVerified: any;
       tokenProfileId: number;
+      grade: string;
+      topics: any;
+      onBoardingQuiz: any;
     } & DefaultSession["user"];
   }
 }
@@ -28,6 +31,9 @@ declare module "next-auth/jwt" {
     token: number;
     emailVerified: any;
     tokenProfileId: number;
+    grade: string;
+    topics: any;
+    onBoardingQuiz: any;
   }
 }
 
@@ -52,6 +58,9 @@ export const authOptions: NextAuthOptions = {
         token.emailVerified = db_user.emailVerified;
         token.address = db_user.address;
         token.tokenProfileId = db_user.tokenProfileId || 0;
+        token.topics = db_user.topics;
+        token.grade = db_user.grade!;
+        token.onBoardingQuiz = db_user.onBoardingQuiz;
       }
 
       return token;
@@ -66,6 +75,9 @@ export const authOptions: NextAuthOptions = {
         session.user.token = token.token;
         session.user.address = token.address;
         session.user.tokenProfileId = token.tokenProfileId;
+        session.user.topics = token.topics;
+        session.user.grade = token.grade;
+        session.user.onBoardingQuiz = token.onBoardingQuiz;
       }
       return session;
     },
