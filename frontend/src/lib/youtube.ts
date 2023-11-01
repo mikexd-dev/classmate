@@ -26,6 +26,7 @@ export async function getTranscript(videoId: string) {
       lang: "en",
       country: "EN",
     });
+    // console.log(transcript_arr, "transcript_arr");
     let transcript = "";
     for (let t of transcript_arr) {
       transcript += t.text + " ";

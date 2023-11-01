@@ -62,7 +62,7 @@ const CoursePage = async ({ params: { slug } }: Props) => {
   console.log(session, "coursepage");
 
   return (
-    <div className="p-10">
+    <div className="py-10">
       <Navbar>
         <ProgressUpdate
           unit={unitIndex}

@@ -27,11 +27,11 @@ const Page = (props: Props) => {
     >
       <div className="rounded-3xl bg-violet-700 w-[652px] h-[640px] shadow-md">
         <div className="w-full h-full rounded-t-3xl backdrop-brightness-75">
-          <div className="text-white font-oi text-4xl font-normal p-6">
+          <div className="text-white font-oi text-4xl font-normal p-6 py-8">
             Welcome
           </div>
         </div>
-        <div className="rounded-3xl bg-white absolute top-[23%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-end justify-between">
+        <div className="rounded-3xl bg-white absolute top-[25%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-end justify-between">
           <div>
             <div className="font-semibold text-2xl pb-2">
               Welcome to CryptoHack!

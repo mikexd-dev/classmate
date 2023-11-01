@@ -13,6 +13,27 @@ import axios from "axios";
 import ConfettiComponent from "@/components/Confetti";
 import { useToast } from "@/components/ui/use-toast";
 
+const profiles = [
+  {
+    name: "Gang",
+    image:
+      "https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json",
+    description: "Friendly Soul",
+  },
+  {
+    name: "Mike",
+    image:
+      "https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json",
+    description: "Rebellious Hunk",
+  },
+  {
+    name: "Terry",
+    image:
+      "https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json",
+    description: "Funny Bunny",
+  },
+];
+
 type Props = {};
 
 export default function Page(props: Props) {
@@ -62,11 +83,11 @@ export default function Page(props: Props) {
       {isMintingComplete && <ConfettiComponent />}
       <div className="rounded-3xl bg-violet-700 w-[652px] h-[640px] shadow-md">
         <div className="w-full h-full rounded-t-3xl backdrop-brightness-75">
-          <div className="text-white font-oi text-4xl font-normal p-6">
+          <div className="text-white font-oi text-4xl font-normal p-6 py-8">
             Learning Buddy
           </div>
         </div>
-        <div className="rounded-3xl bg-white absolute top-[23%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col justify-between">
+        <div className="rounded-3xl bg-white absolute top-[25%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col justify-between">
           <div>
             <div className="font-semibold text-3xl pb-2">
               {!isMinting &&
@@ -79,94 +100,44 @@ export default function Page(props: Props) {
             </div>
             {!isMinting && !isMintingComplete && (
               <div className="flex flex-row  gap-x-2 pt-7">
-                <div className="flex flex-col justify-center items-center">
+                {profiles.map((singleProfile, index) => (
                   <div
-                    className={cn(
-                      "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
-                      {
-                        "border-purple-600 border-4 rounded-3xl p-1":
-                          profile === 0,
-                      }
-                    )}
-                    onClick={() => setProfile(0)}
+                    key={index}
+                    className="flex flex-col justify-center items-center"
                   >
-                    <Player
-                      autoplay
-                      loop
-                      src="https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json"
-                      style={{
-                        height: "180px",
-                        width: "180px",
-                        borderRadius: "24px",
-                        border: "3px solid black",
-                      }}
-                      className="hover:bg-sky-700"
-                    />
+                    <div
+                      className={cn(
+                        "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
+                        {
+                          "border-purple-600 border-4 rounded-3xl p-1":
+                            profile === index,
+                        }
+                      )}
+                      onClick={() => setProfile(index)}
+                    >
+                      <Player
+                        autoplay
+                        loop
+                        src={singleProfile.image}
+                        style={{
+                          height: "180px",
+                          width: "180px",
+                          borderRadius: "24px",
+                          border: "3px solid black",
+                        }}
+                        className="hover:bg-sky-700"
+                      />
+                    </div>
+                    <div className="flex flex-col items-center justify-center pt-3">
+                      <div className="text-2xl font-semibold">
+                        {singleProfile.name}
+                      </div>
+                      <div className="text-xl font-normal">
+                        {singleProfile.description}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-center justify-center pt-3">
-                    <div className="text-2xl font-semibold">Gang</div>
-                    <div className="text-xl font-normal">Friendly Soul</div>
-                  </div>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                  <div
-                    className={cn(
-                      "border-4 border-transparent hover:border-spacing-2 p-1 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
-                      {
-                        "border-purple-600 border-4 rounded-3xl p-1":
-                          profile === 1,
-                      }
-                    )}
-                    onClick={() => setProfile(1)}
-                  >
-                    <Player
-                      autoplay
-                      loop
-                      src="https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json"
-                      style={{
-                        height: "180px",
-                        width: "180px",
-                        borderRadius: "28px",
-                        border: "3px solid black",
-                      }}
-                      className="hover:bg-sky-700"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center justify-center pt-3">
-                    <div className="text-2xl font-semibold">Mike</div>
-                    <div className="text-xl font-normal">Rebellious Hunk</div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-center items-center">
-                  <div
-                    className={cn(
-                      "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
-                      {
-                        "border-purple-600 border-4 rounded-3xl p-1":
-                          profile === 2,
-                      }
-                    )}
-                    onClick={() => setProfile(2)}
-                  >
-                    <Player
-                      autoplay
-                      loop
-                      src="https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json"
-                      style={{
-                        height: "180px",
-                        width: "180px",
-                        borderRadius: "28px",
-                        border: "3px solid black",
-                      }}
-                      className="hover:bg-sky-700"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center justify-center pt-3">
-                    <div className="text-2xl font-semibold">Terry</div>
-                    <div className="text-xl font-normal">Funny Bunny</div>
-                  </div>
-                </div>
+                ))}
               </div>
             )}
             {/* only show selected buddy */}
@@ -184,7 +155,7 @@ export default function Page(props: Props) {
                   <Player
                     autoplay
                     loop
-                    src="https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json"
+                    src={profiles[profile].image}
                     style={{
                       height: "180px",
                       width: "180px",
@@ -195,8 +166,12 @@ export default function Page(props: Props) {
                   />
                 </div>
                 <div className="flex flex-col items-center justify-center pt-3">
-                  <div className="text-2xl font-semibold">Gang</div>
-                  <div className="text-xl font-normal">Friendly Soul</div>
+                  <div className="text-2xl font-semibold">
+                    {profiles[profile].name}
+                  </div>
+                  <div className="text-xl font-normal">
+                    {profiles[profile].description}
+                  </div>
                 </div>
               </div>
             )}

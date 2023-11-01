@@ -74,22 +74,22 @@ export default function Page(props: Props) {
   const checkAnswer = () => {
     const currentOption: any = quiz[quizStep];
     if (option === currentOption.answer) {
-      toast({
-        title: "Correct!",
-        description: "You have answered correctly!",
-      });
+      // toast({
+      //   title: "Correct!",
+      //   description: "You have answered correctly!",
+      // });
       if (correctAnswer.includes(currentOption.question)) {
         setCorrectAnswer([...correctAnswer]);
       } else {
         setCorrectAnswer([...correctAnswer, currentOption.question]);
       }
     } else {
-      toast({
-        title: "Incorrect!",
-        variant: "destructive",
-        description:
-          "You have answered incorrectly! " + currentOption.reasoning,
-      });
+      // toast({
+      //   title: "Incorrect!",
+      //   variant: "destructive",
+      //   description:
+      //     "You have answered incorrectly! " + currentOption.reasoning,
+      // });
       if (wrongAnswer.includes(currentOption.question)) {
         setWrongAnswer([...wrongAnswer]);
       } else {

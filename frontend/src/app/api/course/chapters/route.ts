@@ -46,7 +46,8 @@ export async function POST(req: Request, res: Response) {
     // }
 
     const body = await req.json();
-    const { title, wrongAnswers } = body;
+    const { title: basic_title, wrongAnswers } = body;
+    const title = session?.user?.grade + " " + basic_title;
     console.log(title, wrongAnswers, "title, wrongAnswers");
 
     type outputUnits = {
@@ -68,13 +69,13 @@ export async function POST(req: Request, res: Response) {
     };
 
     let units: any = await strict_output(
-      `You are a very experienced teacher in the science domain, predominantly teaching secondary school science subject that may include biology, chemistry and physics. You are capable of curating course content, coming up with relevant units titles, when given a course title of a ${
+      `You are a very experienced teacher in the science domain, predominantly teaching secondary school science subject that may include biology, chemistry and physics in the singapore secondary school education curriculum. You are capable of curating course content, coming up with relevant units titles, when given a course title of a ${
         session?.user?.grade
       } student. The student wishes to learn the following topics (separated by comma): ${JSON.stringify(
         session?.user?.topics
       )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
         wrongAnswers
-      )}. These could be the topics that the student is weak in.`,
+      )}. These could be the topics that the student is weak in. I only want to generate 3 units, no more and no less.`,
       new Array(3).fill(
         `It is your job to create a unit about ${title} of a ${
           session?.user?.grade
@@ -89,7 +90,8 @@ export async function POST(req: Request, res: Response) {
       }
     );
 
-    console.log(units, "units");
+    // only take the first 3 units
+    units = units.slice(0, 3);
 
     let output_units: outputUnits = await strict_output(
       `You are an AI capable of curating course content of a ${
@@ -108,6 +110,14 @@ export async function POST(req: Request, res: Response) {
           "an array of chapters, each chapter should have a youtube_search_query and a chapter_title key in the JSON object",
       }
     );
+
+    // only take the first 3 chapters of each unit
+    output_units = output_units.map((unit) => {
+      return {
+        title: unit.title,
+        chapters: unit.chapters.slice(0, 3),
+      };
+    });
 
     // const imageSearchTerm = await strict_output(
     //   "you are an AI capable of finding the most relevant image for a course",

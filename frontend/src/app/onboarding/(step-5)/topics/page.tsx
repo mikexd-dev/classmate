@@ -7,28 +7,60 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Player, Controls } from "@lottiefiles/react-lottie-player";
 import { GradeForm } from "@/components/generic/GradeForm";
 import { useRouter } from "next/navigation";
+import { TopicsForm } from "@/components/generic/TopicsForm";
 type Props = {};
 
 export default function Page(props: Props) {
-  const [grade, setGrade] = useState("");
+  const [topics, setTopics] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [quiz, setQuiz] = useState([]);
+
   const router = useRouter();
-  const updateGrade = async () => {
+  const updateTopics = async () => {
     setIsLoading(true);
-    const res = await fetch("/api/users/grade", {
+    const generatedQuiz = await generateQuiz();
+    const res = await fetch("/api/users/topics", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ grade }),
+      body: JSON.stringify({ topics, quiz: generatedQuiz }),
     });
     const data = await res.json();
-    console.log(data);
+    // const res1 = await fetch("/api/users/quiz", {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ quiz: generatedQuiz }),
+    // });
+    // const data1 = await res1.json();
+    console.log(data.data, "updated");
+    localStorage.setItem("quiz", JSON.stringify(generatedQuiz));
+    router.push("/onboarding/quiz");
     setIsLoading(false);
-    if (data.data?.grade === grade) {
-      router.push("/onboarding/topics");
-    }
+
+    // if (
+    //   JSON.stringify(data.data?.topics) === JSON.stringify(topics) &&
+    //   data1.data?.onBoardingQuiz?.length > 0
+    // ) {
+    //   router.push("/onboarding/quiz");
+    // }
   };
+
+  async function generateQuiz() {
+    const res = await fetch("/api/users/quiz", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    console.log(data, quiz, "quiz");
+    setQuiz(data?.data);
+    return data?.data;
+  }
+
   return (
     <div
       className="min-h-screen flex justify-center items-center  "
@@ -40,13 +72,13 @@ export default function Page(props: Props) {
     >
       <div className="rounded-3xl bg-violet-700 w-[652px] h-[640px] shadow-md">
         <div className="w-full h-full rounded-t-3xl backdrop-brightness-75">
-          <div className="text-white font-oi text-4xl font-normal p-6">
-            Grade
+          <div className="text-white font-oi text-4xl font-normal p-6 py-8">
+            Topics
           </div>
         </div>
-        <div className="rounded-3xl bg-white absolute top-[23%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col  justify-between">
+        <div className="rounded-3xl bg-white absolute top-[25%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col  justify-between">
           <div>
-            <GradeForm setGrade={setGrade} />
+            <TopicsForm setTopics={setTopics} topics={topics} />
           </div>
           <div className="flex flex-row items-between justify-between w-full">
             <Link href={"/onboarding"}>
@@ -61,10 +93,10 @@ export default function Page(props: Props) {
 
             <Button
               className="p-8 px-10 rounded-full text-xl mr-5"
-              onClick={() => updateGrade()}
-              disabled={grade === "" || isLoading}
+              onClick={() => updateTopics()}
+              disabled={topics.length === 0 || isLoading}
             >
-              Next
+              {isLoading ? "Generating Quiz..." : "Next"}
               {!isLoading && (
                 <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
               )}
