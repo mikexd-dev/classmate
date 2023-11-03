@@ -129,6 +129,31 @@ model Question {
   @@index([chapterId], name: "chapterId")
 }
 
+enum user_system_enum {
+  system
+  user
+  assistant
+}
+
+model Chats {
+  id        Int        @id @default(autoincrement())
+  pdfName   String
+  pdfUrl    String
+  createdAt DateTime   @default(now())
+  userId    String
+  fileKey   String
+  messages  Messages[]
+}
+
+model Messages {
+  id        Int              @id @default(autoincrement())
+  chatId    Int
+  content   String
+  createdAt DateTime         @default(now())
+  role      user_system_enum
+  chats     Chats            @relation(fields: [chatId], references: [id])
+}
+
 // model UserSubscription {
 //   id                     String    @id @default(cuid())
 //   userId                 String    @unique
