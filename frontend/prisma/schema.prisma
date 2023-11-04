@@ -52,6 +52,7 @@ model User {
   sessions       Session[]
   courses        UserProgress[]
   Course         Course[]
+  chats          Chats[]
 }
 
 // course contains many units
@@ -138,11 +139,9 @@ enum user_system_enum {
 
 model Chats {
   id        Int        @id @default(autoincrement())
-  pdfName   String
-  pdfUrl    String
-  createdAt DateTime   @default(now())
   userId    String
-  fileKey   String
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
   messages  Messages[]
 }
 

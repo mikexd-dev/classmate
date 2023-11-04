@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai-edge";
-import { prisma } from "@/lib/db";
+import { PrismaClient } from "@prisma/client/edge";
+import { withAccelerate } from "@prisma/extension-accelerate";
 import { Message, OpenAIStream, StreamingTextResponse } from "ai";
 import { getContext } from "@/lib/context";
 import { NextResponse } from "next/server";
@@ -12,6 +13,8 @@ const config = new Configuration({
 const openai = new OpenAIApi(config);
 
 export async function POST(req: Request) {
+  const prisma = new PrismaClient().$extends(withAccelerate());
+
   try {
     const { messages, chatId } = await req.json();
     const _chats = await prisma.chats.findMany({
@@ -19,6 +22,7 @@ export async function POST(req: Request) {
         id: chatId,
       },
     });
+    console.log("chat la ->>>>", _chats);
     if (_chats.length != 1) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
@@ -39,9 +43,8 @@ export async function POST(req: Request) {
           - Photosynthesis
     `;
 
-    const fileKey = _chats[0].fileKey;
     const lastMessage = messages[messages.length - 1];
-    const context = await getContext(lastMessage.content, fileKey);
+    const context = await getContext(lastMessage.content);
 
     console.log("lastMessage -> ", lastMessage);
     // console.log("context -> ", context);
@@ -117,5 +120,7 @@ export async function POST(req: Request) {
       },
     });
     return new StreamingTextResponse(stream);
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }

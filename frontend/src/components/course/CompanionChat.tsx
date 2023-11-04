@@ -14,34 +14,34 @@ import BuddySVG from "public/demo-profile.svg";
 type Props = { chatId: number };
 
 const CompanionChat = ({ chatId }: Props) => {
-  // const { data, isLoading } = useQuery({
-  //   queryKey: ["chat", chatId],
-  //   queryFn: async () => {
-  //     const response = await axios.post<Message[]>("/api/get-messages", {
-  //       chatId,
-  //     });
-  //     return response.data;
-  //   },
-  // });
+  const { data, isLoading } = useQuery({
+    queryKey: ["chat", chatId],
+    queryFn: async () => {
+      const response = await axios.post<Message[]>("/api/get-messages", {
+        chatId,
+      });
+      return response.data;
+    },
+  });
 
-  // const { input, handleInputChange, handleSubmit, messages } = useChat({
-  //   api: "/api/chat",
-  //   body: {
-  //     chatId,
-  //   },
-  //   initialMessages: data || [],
-  // });
+  const { input, handleInputChange, handleSubmit, messages } = useChat({
+    api: "/api/chat",
+    body: {
+      chatId,
+    },
+    initialMessages: data || [],
+  });
 
-  // // scroll to bottom when new message is added
-  // React.useEffect(() => {
-  //   const messageContainer = document.getElementById("message-container");
-  //   if (messageContainer) {
-  //     messageContainer.scrollTo({
-  //       top: messageContainer.scrollHeight,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // }, [messages]);
+  // scroll to bottom when new message is added
+  React.useEffect(() => {
+    const messageContainer = document.getElementById("message-container");
+    if (messageContainer) {
+      messageContainer.scrollTo({
+        top: messageContainer.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
 
   return (
     <div className="rounded-3xl bg-stone-200 w-[340px] h-full shadow-md pb-10 mt-5">
@@ -60,12 +60,15 @@ const CompanionChat = ({ chatId }: Props) => {
           </div>
         </div>
       </div>
-      {/* <div className="rounded-3xl bg-white absolute top-[24%] w-[340px] h-[500px] shadow-xl p-8 flex flex-col items-end justify-between">
+      <div
+        className="rounded-3xl overflow-scroll bg-white absolute top-[24%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
+        id="message-container"
+      >
         <MessageList messages={messages} isLoading={isLoading} />
 
         <form
           onSubmit={handleSubmit}
-          className="sticky bottom-0 inset-x-0 px-2 py-4 bg-white"
+          className="sticky bottom-0 w-full inset-x-0 px-4 py-4 bg-white"
         >
           <div className="flex">
             <Input
@@ -79,7 +82,7 @@ const CompanionChat = ({ chatId }: Props) => {
             </Button>
           </div>
         </form>
-      </div> */}
+      </div>
     </div>
   );
 };

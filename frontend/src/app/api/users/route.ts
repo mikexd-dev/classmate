@@ -16,6 +16,22 @@ export async function POST(request: Request) {
   const walletAddress = requestBody.walletAddress;
 
   // console.log(session, walletAddress, "id, walletAddress");
+
+  const chat = await prisma.chats.findFirst({
+    where: { userId: session?.user?.id },
+  });
+
+  console.log();
+
+  // if no chat, create chat - required, otherwise chat will be created twice
+  if (!chat) {
+    await prisma.chats.create({
+      data: {
+        userId: session?.user?.id,
+      },
+    });
+  }
+
   const data = await prisma.user.update({
     where: {
       id: session?.user?.id,
@@ -24,6 +40,7 @@ export async function POST(request: Request) {
       address: walletAddress,
     },
   });
+
   return NextResponse.json({
     data,
   });
