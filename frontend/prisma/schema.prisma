@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL") // required for migration and introspection with prisma since Prisma Migrate and Introspection do not work with a prisma:// connection string
 }
 
 model Account {
