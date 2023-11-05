@@ -39,11 +39,7 @@ const MessageList = ({ messages, isLoading }: Props) => {
                 }
               )}
             >
-              <MarkdownComponent
-                // remarkPlugins={[remarkBreaks]}
-                markdown={message.content.replace(/\n/gi, "&nbsp; \n")}
-              />
-              {/* <p>{message.content}</p> */}
+              <MarkdownComponent markdown={message.content} />
             </div>
           </div>
         );
