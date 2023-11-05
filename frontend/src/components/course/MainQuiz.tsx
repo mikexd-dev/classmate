@@ -12,7 +12,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import ScoreSVG from "../../../public/score.svg";
 import { proxy, useSnapshot } from "valtio";
-import { state } from "@/lib/utils";
 
 type Props = {
   //   chapter: Chapter;
@@ -20,6 +19,18 @@ type Props = {
   unitIndex: number;
   //   chapterIndex: number;
 };
+
+export const state = proxy({
+  count: 0,
+  unusedCount: 0,
+  quizQnAns: {},
+  addQuizQnAns: (n: any) => {
+    state.quizQnAns = n;
+  },
+  add: (n: number) => {
+    state.count += n;
+  },
+});
 
 const MainQuiz = ({
   unit,

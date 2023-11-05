@@ -13,9 +13,9 @@ import BuddySVG from "public/demo-profile.svg";
 import { useSession } from "next-auth/react";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { subscribe, useSnapshot, snapshot } from "valtio";
-import { state } from "@/lib/utils";
 import { debounce } from "lodash";
 import { uuidV4 } from "ethers";
+import { state } from "./MainQuiz";
 
 const profiles = [
   {
@@ -182,25 +182,24 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
           onSubmit={handleSubmit}
           className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 py-2 bg-white"
         >
-          {isLoadingQuizExplanation ||
-            (isMessageLoading && (
-              <div className="flex flex-start w-full">
-                <Player
-                  autoplay
-                  loop
-                  src={
-                    "https://lottie.host/3238e0e1-dd8d-43f8-8727-c041f22d2d71/oawumDLEXG.json"
-                  }
-                  style={{
-                    height: "30px",
-                    width: "30px",
-                    // borderRadius: "24px",
-                    // border: "3px solid black",
-                  }}
-                  className="relative bottom-0"
-                />
-              </div>
-            ))}
+          {(isLoadingQuizExplanation || isMessageLoading) && (
+            <div className="flex flex-start w-full">
+              <Player
+                autoplay
+                loop
+                src={
+                  "https://lottie.host/3238e0e1-dd8d-43f8-8727-c041f22d2d71/oawumDLEXG.json"
+                }
+                style={{
+                  height: "30px",
+                  width: "30px",
+                  // borderRadius: "24px",
+                  // border: "3px solid black",
+                }}
+                className="relative bottom-0"
+              />
+            </div>
+          )}
 
           <div className="flex">
             <Input

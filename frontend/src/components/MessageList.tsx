@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Message } from "ai/react";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import Markdown from "react-markdown";
+import { MarkdownComponent } from "./Markdown";
 import remarkBreaks from "remark-breaks";
 
 type Props = {
@@ -39,10 +39,9 @@ const MessageList = ({ messages, isLoading }: Props) => {
                 }
               )}
             >
-              <Markdown
-                className={"overflow-y-auto max-w-[250px] overflow-x-hidden"}
-                remarkPlugins={[remarkBreaks]}
-                children={message.content.replace(/\n/gi, "&nbsp; \n")}
+              <MarkdownComponent
+                // remarkPlugins={[remarkBreaks]}
+                markdown={message.content.replace(/\n/gi, "&nbsp; \n")}
               />
               {/* <p>{message.content}</p> */}
             </div>
