@@ -33,7 +33,10 @@ const CoursePage = ({ params: { slug } }: Props) => {
   const [chapter, setChapter] = useState<any>(null);
   const [chat, setChat] = useState<any>(null);
   const [courseId, unitIndexParam, chapterIndexParam] = slug;
-
+  const [quiz, setQuiz] = useState<any>(null);
+  const [quizStep, setQuizStep] = useState(0);
+  const [wrongAnswer, setWrongAnswer] = useState<any[]>([]);
+  const [showAnswer, setAnswer] = useState(false);
   useEffect(() => {
     const fetchCourse = async () => {
       const response = await axios.get(`/api/course/chapters?id=${courseId}`);
@@ -99,7 +102,18 @@ const CoursePage = ({ params: { slug } }: Props) => {
           </div>
           <div className="flex-3">
             {chapterIndex === 3 ? (
-              <MainQuiz unit={unit} unitIndex={unitIndex} />
+              <MainQuiz
+                unit={unit}
+                unitIndex={unitIndex}
+                setQuiz={setQuiz}
+                quiz={quiz}
+                quizStep={quizStep}
+                setQuizStep={setQuizStep}
+                wrongAnswer={wrongAnswer}
+                setWrongAnswer={setWrongAnswer}
+                showAnswer={showAnswer}
+                setAnswer={setAnswer}
+              />
             ) : (
               <MainVideoSummary
                 chapter={chapter}
@@ -110,7 +124,13 @@ const CoursePage = ({ params: { slug } }: Props) => {
             )}
           </div>
           <div className="flex-1">
-            {chat && <CompanionChat chatId={chat!.id} />}
+            {chat && (
+              <CompanionChat
+                chatId={chat!.id}
+                currentQuiz={quiz && quiz[quizStep]}
+                showAnswer={showAnswer}
+              />
+            )}
           </div>
         </div>
       )}

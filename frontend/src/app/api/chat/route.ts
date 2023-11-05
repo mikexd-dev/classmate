@@ -34,24 +34,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
 
-    // hard coded for now
-    // TODO: get onboarding info from mike's part
-    // const onboardingInfo = `
-    //   Student's name: Terry
-    //   Student's grade: Secondary 2 (Express stream)
-    //   Skill analysis:
-    //     Strengths:
-    //       - Adaptations
-    //       - Life cycles
-    //       - Reproduction
-
-    //     Weaknesses:
-    //       - Respiration
-    //       - Photosynthesis
-    // `;
-
-    // console.log(quiz, "quiz", promptQuiz);
-
+    // TODO: i created this to try the quiz prompt injection, through useComplete, they use prompt, but i think is not the right way to do it
     if (promptQuiz) {
       const prompt = {
         role: "system",
@@ -65,7 +48,9 @@ export async function POST(req: Request) {
 
         A student will be interacting with you to learn about Singapore's Lower Secondary School Science.
 
-        Using only the Student Onboarding Information and the Context on Singapore's lower secondary school science syllabus provided above, you're to perform the following tasks:
+        Do not say "I'm sorry, but it seems there's a misunderstanding. The correct answer isn't provided." Always start with "Excellet question!" and address the student by name provided in the Student Onboarding Information.
+
+        Using the Student Onboarding Information and the Context on Singapore's lower secondary school science syllabus provided above and the quiz question, option and correct answer, you're to perform the following tasks:
         1. Adopt a socratic dialogue learning method.
         2. Use Theory of Mind, a concept in psychology, to understand the student's questions or responses, and thereafter: 
           a. Question their current assumptions
@@ -77,6 +62,7 @@ export async function POST(req: Request) {
         6. When a student says he/she wants to learn something, provide a breakdown/outline and have them response before you provide any explanations.
         7. Ensure that the content and explanations you provide are for a secondary 1 or 2 student, aged 13 to 14 years old. Having too advanced content or explanations will confuse the student.
         8. Do not answer questions that are not related to the context on Singapore's lower secondary school science syllabus.
+        9. When given a question and student's answer and the correct answer, provide an explanation on why the student's answer is wrong and why the correct answer is correct. Do not question the correct answer or mention there is a misunderstanding. Comfort the student if their answer is wrong and encourage the student if their answer is correct.
       `,
       };
 
@@ -85,16 +71,13 @@ export async function POST(req: Request) {
       const userMessage: any = {
         role: "user",
         content: `
-       User has attempted the following quiz:
-          ${quiz.question}
-
-        User has selected the following option:
-          ${quiz.answer}
-
-        This is the correct answer:
-          ${quiz.correct_answer}  
+        Given this question: ${quiz.question}, 
+        User has selected the following option: ${quiz.answer}. The user is ${
+          quiz.answer === quiz.correct_answer ? "correct" : "wrong"
+        }
         
-          Explain to the user why this is the correct answer and why was the user's option wrong
+        This is the correct answer: ${quiz.correct_answer}  
+        Explain to the user why this is the correct answer and why was the user's option wrong and ask if the user needs more explanation.
       `,
       };
 
@@ -106,15 +89,13 @@ export async function POST(req: Request) {
         stream: true,
       });
 
-      console.log(response, "response");
-
       const stream = OpenAIStream(response, {
         onStart: async () => {
           // save user message into db
           await prisma.messages.create({
             data: {
               chatId,
-              content: promptQuiz,
+              content: quiz.question,
               role: "user",
             },
           });

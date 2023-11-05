@@ -15,6 +15,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import { subscribe, useSnapshot, snapshot } from "valtio";
 import { state } from "@/lib/utils";
 import { debounce } from "lodash";
+import { uuidV4 } from "ethers";
 
 const profiles = [
   {
@@ -37,10 +38,12 @@ const profiles = [
   },
 ];
 
-type Props = { chatId: number };
+type Props = { chatId: number; currentQuiz: any; showAnswer: boolean };
 
-const CompanionChat = ({ chatId }: Props) => {
+const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
   const { data: session } = useSession();
+  const [isLoadingQuizExplanation, setLoadingQuizExplanation] =
+    React.useState(false);
   const [quiz, setQuiz] = React.useState<any>(null);
   const [profile, setProfile] = React.useState(profiles[0]);
   const { data, isLoading } = useQuery({
@@ -58,16 +61,55 @@ const CompanionChat = ({ chatId }: Props) => {
     body: {
       chatId,
     },
+    onResponse: (response) => {
+      console.log("response", response);
+      // setQuiz(response.data.quiz);
+    },
+    onFinish: () => {
+      console.log("finished ->>>", completion, messages[messages.length - 1]);
+      // if (completion !== "") {
+      //   setMessages([
+      //     ...messages,
+      //     {
+      //       id: messages[messages.length - 1].id + 1,
+      //       role: "assistant",
+      //       content: completion,
+      //     },
+      //   ]);
+      // }
+    },
   });
 
   let prevState = snapshot(state);
   const snap = useSnapshot(state);
-  // console.log("times", snap.quizQnAns);
 
   useEffect(() => {
-    const debouncedLogHi = debounce(() => {
-      console.log("times");
-      complete(JSON.stringify(state.quizQnAns));
+    const debouncedLogHi = debounce(async () => {
+      //TODO: terry this is like the only method i can figure out how to work using vercel ai, u can see if there is a better way, but it works now just without streaming
+      if (currentQuiz?.question === state.quizQnAns?.question && showAnswer) {
+        console.log("correct on the same quiz");
+        const newMessages: any = [
+          ...messages,
+          {
+            id: messages[messages.length - 1].id + 1,
+            role: "user",
+            content: currentQuiz.question,
+          },
+        ];
+        setMessages([...newMessages]);
+        setLoadingQuizExplanation(true);
+        const completed = await complete(JSON.stringify(state.quizQnAns));
+        const newMessages2: any = [
+          ...newMessages,
+          {
+            id: newMessages[newMessages.length - 1].id + 1,
+            role: "assistant",
+            content: completed,
+          },
+        ];
+        setMessages([...newMessages2]);
+        setLoadingQuizExplanation(false);
+      }
     }, 200);
     debouncedLogHi();
   }, [snap.quizQnAns]);
@@ -77,7 +119,14 @@ const CompanionChat = ({ chatId }: Props) => {
       Student's grade: ${session?.user.grade} (Express stream)
     `;
 
-  const { input, handleInputChange, handleSubmit, messages } = useChat({
+  const {
+    input,
+    handleInputChange,
+    handleSubmit,
+    messages,
+    setMessages,
+    isLoading: isMessageLoading,
+  } = useChat({
     api: "/api/chat",
     body: {
       chatId,
@@ -124,15 +173,35 @@ const CompanionChat = ({ chatId }: Props) => {
         </div>
       </div>
       <div
-        className="rounded-3xl overflow-scroll bg-white absolute top-[24%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
+        className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
         id="message-container"
       >
         <MessageList messages={messages} isLoading={isLoading} />
 
         <form
           onSubmit={handleSubmit}
-          className="sticky bottom-0 w-full inset-x-0 px-4 py-4 bg-white"
+          className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 py-2 bg-white"
         >
+          {isLoadingQuizExplanation ||
+            (isMessageLoading && (
+              <div className="flex flex-start w-full">
+                <Player
+                  autoplay
+                  loop
+                  src={
+                    "https://lottie.host/3238e0e1-dd8d-43f8-8727-c041f22d2d71/oawumDLEXG.json"
+                  }
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    // borderRadius: "24px",
+                    // border: "3px solid black",
+                  }}
+                  className="relative bottom-0"
+                />
+              </div>
+            ))}
+
           <div className="flex">
             <Input
               value={input}

@@ -21,14 +21,25 @@ type Props = {
   //   chapterIndex: number;
 };
 
-const MainQuiz = ({ unit, unitIndex }: Props) => {
-  const [quiz, setQuiz] = React.useState<any[]>([]);
-  const [quizStep, setQuizStep] = React.useState(0);
+const MainQuiz = ({
+  unit,
+  unitIndex,
+  quiz,
+  setQuiz,
+  quizStep,
+  setQuizStep,
+  wrongAnswer,
+  setWrongAnswer,
+  showAnswer,
+  setAnswer,
+}: any) => {
+  //   const [quiz, setQuiz] = React.useState<any[]>([]);
+  //   const [quizStep, setQuizStep] = React.useState(0);
   const [option, setOption] = React.useState<any>();
   const [progress, setProgress] = React.useState(0);
   const [correctAnswer, setCorrectAnswer] = React.useState<any[]>([]);
-  const [wrongAnswer, setWrongAnswer] = React.useState<any[]>([]);
-  const [showAnswer, setAnswer] = React.useState(false);
+  //   const [wrongAnswer, setWrongAnswer] = React.useState<any[]>([]);
+  //   const [showAnswer, setAnswer] = React.useState(false);
   const [score, setScore] = React.useState(-1);
 
   const snap = useSnapshot(state);
@@ -102,7 +113,7 @@ const MainQuiz = ({ unit, unitIndex }: Props) => {
         }}
         className="w-[540px]"
       >
-        {score === -1 && quiz.length > 0 && (
+        {score === -1 && quiz?.length > 0 && (
           <div className="pt-6">
             <div className="font-light text-md pb-2">
               Question {quizStep + 1} of 10
