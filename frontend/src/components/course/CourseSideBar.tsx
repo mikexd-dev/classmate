@@ -26,11 +26,7 @@ type Props = {
   currentUnit: any;
 };
 
-const CourseSideBar = async ({
-  course,
-  currentChapterId,
-  currentUnit,
-}: Props) => {
+const CourseSideBar = ({ course, currentChapterId, currentUnit }: Props) => {
   return (
     <div className="min-w-[240px] max-w-[300px] px-2 rounded-r-3xl ">
       {/* <h1 className="text-lg font-bold">{course.name}</h1> */}

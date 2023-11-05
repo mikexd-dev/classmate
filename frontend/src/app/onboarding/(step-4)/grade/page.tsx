@@ -63,7 +63,7 @@ export default function Page(props: Props) {
               <GradeForm setGrade={setGrade} />
             </div>
             <div className="flex flex-row items-between justify-between w-full">
-              <Link href={"/onboarding"}>
+              <Link href={"/onboarding/buddy"}>
                 <Button
                   className="p-8 px-10 rounded-full text-xl mr-5"
                   variant={"secondary"}

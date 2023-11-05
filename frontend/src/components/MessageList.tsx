@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { Message } from "ai/react";
 import { Loader2 } from "lucide-react";
 import React from "react";
+import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 
 type Props = {
   isLoading: boolean;
@@ -33,11 +35,16 @@ const MessageList = ({ messages, isLoading }: Props) => {
               className={cn(
                 "rounded-lg px-3 text-sm py-2 shadow-md ring-1 ring-gray-900/10",
                 {
-                  "bg-blue-600 text-white": message.role === "user",
+                  "bg-purple-600 text-white": message.role === "user",
                 }
               )}
             >
-              <p>{message.content}</p>
+              <Markdown
+                className={"overflow-y-auto"}
+                remarkPlugins={[remarkBreaks]}
+                children={message.content.replace(/\n/gi, "&nbsp; \n")}
+              />
+              {/* <p>{message.content}</p> */}
             </div>
           </div>
         );

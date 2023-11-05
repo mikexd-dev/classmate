@@ -46,6 +46,7 @@ model User {
   token          Int            @default(10)
   tokenProfileId Int?
   grade          String?
+  buddy          String?
   topics         String[]
   onBoardingQuiz Json?
   accounts       Account[]

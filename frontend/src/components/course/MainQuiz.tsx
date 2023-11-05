@@ -11,6 +11,8 @@ import { Button } from "../generic";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import ScoreSVG from "../../../public/score.svg";
+import { proxy, useSnapshot } from "valtio";
+import { state } from "@/lib/utils";
 
 type Props = {
   //   chapter: Chapter;
@@ -28,6 +30,8 @@ const MainQuiz = ({ unit, unitIndex }: Props) => {
   const [wrongAnswer, setWrongAnswer] = React.useState<any[]>([]);
   const [showAnswer, setAnswer] = React.useState(false);
   const [score, setScore] = React.useState(-1);
+
+  const snap = useSnapshot(state);
   React.useEffect(() => {
     async function retrieveQuestions() {
       const response = await axios.get(`/api/unit/questions?unitId=${unit.id}`);
@@ -42,28 +46,25 @@ const MainQuiz = ({ unit, unitIndex }: Props) => {
     setAnswer(true);
     const currentOption: any = quiz[quizStep];
     if (option === currentOption.answer) {
-      // toast({
-      //   title: "Correct!",
-      //   description: "You have answered correctly!",
-      // });
       if (correctAnswer.includes(currentOption.question)) {
         setCorrectAnswer([...correctAnswer]);
       } else {
         setCorrectAnswer([...correctAnswer, currentOption.question]);
       }
     } else {
-      // toast({
-      //   title: "Incorrect!",
-      //   variant: "destructive",
-      //   description:
-      //     "You have answered incorrectly! " + currentOption.reasoning,
-      // });
       if (wrongAnswer.includes(currentOption.question)) {
         setWrongAnswer([...wrongAnswer]);
       } else {
         setWrongAnswer([...wrongAnswer, currentOption.question]);
       }
     }
+    const obj = {
+      question: currentOption.question,
+      answer: currentOption.answer,
+      selectedAnswer: option,
+      isCorrect: option === currentOption.answer,
+    };
+    snap.addQuizQnAns(obj);
   };
 
   const nextQuestion = () => {

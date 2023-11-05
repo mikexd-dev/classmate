@@ -16,6 +16,7 @@ declare module "next-auth" {
       tokenProfileId: number;
       grade: string;
       topics: any;
+      buddy: string;
       onBoardingQuiz: any;
     } & DefaultSession["user"];
   }
@@ -33,6 +34,7 @@ declare module "next-auth/jwt" {
     tokenProfileId: number;
     grade: string;
     topics: any;
+    buddy: string;
     onBoardingQuiz: any;
   }
 }
@@ -60,6 +62,7 @@ export const authOptions: NextAuthOptions = {
         token.tokenProfileId = db_user.tokenProfileId || 0;
         token.topics = db_user.topics;
         token.grade = db_user.grade!;
+        token.buddy = db_user.buddy!;
         token.onBoardingQuiz = db_user.onBoardingQuiz;
       }
 
@@ -77,6 +80,7 @@ export const authOptions: NextAuthOptions = {
         session.user.tokenProfileId = token.tokenProfileId;
         session.user.topics = token.topics;
         session.user.grade = token.grade;
+        session.user.buddy = token.buddy;
         session.user.onBoardingQuiz = token.onBoardingQuiz;
       }
       return session;

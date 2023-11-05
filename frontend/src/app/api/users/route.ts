@@ -57,6 +57,7 @@ export async function PUT(request: Request) {
   const id: any = queryParams.id;
   const requestBody = await request.json();
   const tokenProfileId = requestBody.tokenProfileId;
+  const buddy = requestBody.buddy;
 
   // console.log(session, walletAddress, "id, walletAddress");
   const data = await prisma.user.update({
@@ -65,6 +66,7 @@ export async function PUT(request: Request) {
     },
     data: {
       tokenProfileId,
+      buddy,
     },
   });
   return NextResponse.json({

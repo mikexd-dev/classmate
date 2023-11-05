@@ -10,13 +10,15 @@ import { getUnsplashImage } from "@/lib/unsplash";
 import { uploadJson } from "@/lib/s3";
 import { generateImagePrompt, generateImage } from "@/lib/openai";
 import { searchYoutube } from "@/lib/youtube";
+import url from "url";
 // import { checkSubscription } from "@/lib/subscription";
 
 export const maxDuration = 60;
 
 export async function GET(req: Request, res: Response) {
-  const body = await req.json();
-  const { courseId } = body;
+  // const body = await req.json();
+  const queryParams = url.parse(req.url, true).query;
+  const courseId: any = queryParams.id;
 
   const course = await prisma.course.findUnique({
     where: { id: courseId },

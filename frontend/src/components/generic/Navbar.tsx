@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 import SignInButton from "../SignInButton";
@@ -11,10 +13,11 @@ import { profile } from "console";
 import Image from "next/image";
 type Props = {};
 
-const Navbar = async ({ children, newToken }: any) => {
+const Navbar = ({ children, newToken }: any) => {
   // const [open, setOpen] = React.useState(false);
   let profileTokenid: any = null;
-  const session = await getAuthSession();
+  const { data: session } = useSession();
+  // const session = await getAuthSession();
   // profileTokenid = session?.user?.tokenProfileId as any;
 
   return (

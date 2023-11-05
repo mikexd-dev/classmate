@@ -18,19 +18,19 @@ const profiles = [
   {
     name: "Gang",
     image:
-      "https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json",
+      "https://lottie.host/8cf62b57-b445-42e8-88fd-efce01619d88/vTIR5AUvRu.json",
     description: "Friendly Soul",
   },
   {
     name: "Mike",
     image:
-      "https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json",
+      "https://lottie.host/62814086-9223-42b9-8f1a-2226f2fa0ee0/eLjJebcnDC.json",
     description: "Rebellious Hunk",
   },
   {
     name: "Terry",
     image:
-      "https://lottie.host/b2d860fc-aea7-41be-a186-71193e6688d1/jYHsj0muJA.json",
+      "https://lottie.host/0a34a2ae-759c-45fd-a975-e69c50404461/U6jSLu1A2r.json",
     description: "Funny Bunny",
   },
 ];
@@ -62,6 +62,7 @@ export default function Page(props: Props) {
     const tokenProfileId = Number({ ...amount?.args }[1]);
     const response = await axios.put("/api/users", {
       tokenProfileId,
+      buddy: profiles[profile].name,
     });
 
     toast({
@@ -123,9 +124,9 @@ export default function Page(props: Props) {
                     >
                       <div
                         className={cn(
-                          "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
+                          "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-[25%] hover:ring-offset-2 hover:p-1 cursor-pointer",
                           {
-                            "border-purple-600 border-4 rounded-3xl p-1":
+                            "border-purple-600 border-4 rounded-[25%] p-1":
                               profile === index,
                           }
                         )}
@@ -138,8 +139,8 @@ export default function Page(props: Props) {
                           style={{
                             height: "180px",
                             width: "180px",
-                            borderRadius: "24px",
-                            border: "3px solid black",
+                            // borderRadius: "24px",
+                            // border: "3px solid black",
                           }}
                           className="hover:bg-sky-700"
                         />
@@ -161,9 +162,9 @@ export default function Page(props: Props) {
                 <div className="flex flex-col justify-center items-center pt-7">
                   <div
                     className={cn(
-                      "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-3xl hover:ring-offset-2 hover:p-1 cursor-pointer",
+                      "border-4 border-transparent p-1 hover:border-spacing-2 hover:border-purple-600 hover:border-4  hover:rounded-[25%] hover:ring-offset-2 hover:p-1 cursor-pointer",
                       {
-                        "border-purple-600 border-4 rounded-3xl p-1":
+                        "border-purple-600 border-4 rounded-[25%] p-1":
                           profile === profile,
                       }
                     )}
@@ -175,8 +176,8 @@ export default function Page(props: Props) {
                       style={{
                         height: "180px",
                         width: "180px",
-                        borderRadius: "24px",
-                        border: "3px solid black",
+                        // borderRadius: "24px",
+                        // border: "3px solid black",
                       }}
                       className="hover:bg-sky-700"
                     />

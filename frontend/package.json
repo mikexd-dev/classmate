@@ -43,6 +43,7 @@
     "encoding": "^0.1.13",
     "ethers": "^6.8.0",
     "framer-motion": "^10.16.4",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.284.0",
     "next": "13.5.4",
     "next-auth": "^4.23.2",
@@ -66,6 +67,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.200",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
