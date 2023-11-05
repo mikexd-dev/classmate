@@ -1,7 +1,7 @@
 import React from "react";
 import Markdown from "react-markdown";
 // import remarkDirective from "remark-directive";
-import rehypeHighlight from "rehype-highlight";
+// import rehypeHighlight from "rehype-highlight";
 import { visit } from "unist-util-visit";
 
 import "highlight.js/styles/github.css";
@@ -80,7 +80,7 @@ const MarkdownMemo = ({ markdown }: any) => {
         className={"overflow-y-auto max-w-[250px] overflow-x-hidden"}
         children={markdown.replace(/\n/gi, "&nbsp; \n")}
         remarkPlugins={[customNotesPlugin, remarkBreaks]}
-        rehypePlugins={[rehypeHighlight]}
+        // rehypePlugins={[rehypeHighlight]}
         components={{
           h1: headerParser,
           h2: headerParser,
