@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { Input } from "../ui/input";
 import { useChat } from "ai/react";
@@ -28,6 +29,7 @@ const CompanionChat = ({ chatId }: Props) => {
     api: "/api/chat",
     body: {
       chatId,
+      userInitiated: true,
     },
     initialMessages: data || [],
   });
@@ -44,7 +46,7 @@ const CompanionChat = ({ chatId }: Props) => {
   }, [messages]);
 
   return (
-    <div className="rounded-3xl bg-stone-200 w-[340px] h-full shadow-md pb-10 mt-5">
+    <div className="rounded-3xl bg-stone-200 w-[340px] h-full shadow-md pb-10 mt-5 relative">
       <div className="w-full h-full rounded-t-3xl flex flex-row p-5 pt-2">
         <Image
           src={BuddySVG}
@@ -61,7 +63,7 @@ const CompanionChat = ({ chatId }: Props) => {
         </div>
       </div>
       <div
-        className="rounded-3xl overflow-scroll bg-white absolute top-[24%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
+        className="rounded-3xl overflow-y-scroll bg-white absolute top-24 w-[340px] h-[38rem] shadow-xl flex flex-col items-end justify-between"
         id="message-container"
       >
         <MessageList messages={messages} isLoading={isLoading} />
@@ -70,14 +72,14 @@ const CompanionChat = ({ chatId }: Props) => {
           onSubmit={handleSubmit}
           className="sticky bottom-0 w-full inset-x-0 px-4 py-4 bg-white"
         >
-          <div className="flex">
+          <div className="flex border-gray-200 border-2 p-1 rounded-[99px]">
             <Input
               value={input}
               onChange={handleInputChange}
               placeholder="Ask any question..."
-              className="w-full"
+              className="w-full border-transparent ring-transparent focus-visible:ring-transparent focus-visible:ring-offset-0 bg-transparent"
             />
-            <Button className="bg-blue-600 ml-2">
+            <Button className="bg-purple-600 ml-2 rounded-[99px]">
               <Send className="h-4 w-4" />
             </Button>
           </div>
