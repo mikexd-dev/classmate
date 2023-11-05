@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { Info, Loader2, Plus, Search, Trash } from "lucide-react";
+import { PlusIcon, Info, Loader2, Plus, Search, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
@@ -62,18 +62,9 @@ const CreateCourseForm = (props: Props) => {
   };
 
   return (
-    <div className="w-full">
-      {/* <Form {...form}> */}
-      <form onSubmit={handleSubmit} className="w-full my-5">
+    <div className="">
+      {/* <form onSubmit={handleSubmit} className="w-full my-5">
         <div className="flex flex-row justify-center items-center space-x-5">
-          <Image
-            src="/mohawk.svg"
-            width={150}
-            height={150}
-            alt="Hero Image"
-            className="absolute inset-0 w-24 hidden sm:block sm:left-[2%] sm:top-[10%] 
-            lg:w-40 lg:top-[8%] lg:left-[20%] -z-2"
-          />
           <div className="flex-2 relative ">
             <Search className="h-4 w-4 absolute top-3 left-3 text-slate-600" />
             <Input
@@ -98,7 +89,26 @@ const CreateCourseForm = (props: Props) => {
             </div>
           </div>
         </div>
-      </form>
+      </form> */}
+
+      <Button
+        className="p-6 rounded-full text-sm mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
+        // onClick={() => setQuizStep(0)}
+        disabled={isLoading}
+      >
+        <PlusIcon className="mr-2 w-4 h-4" strokeWidth={3} />
+        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+        New Course
+      </Button>
+
+      {/* <Button
+        type="submit"
+        className="bg-purple-600 rounded-"
+        disabled={isLoading}
+      >
+        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+        Let's Go!
+      </Button> */}
     </div>
   );
 };

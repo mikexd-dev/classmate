@@ -23,7 +23,10 @@ import {
 } from "../ui/dialog";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { set } from "zod";
+import Image from "next/image";
+import CoinSVG from "../../../public/coin.svg";
+import { useSession } from "next-auth/react";
+import { Player } from "@lottiefiles/react-lottie-player";
 // import courseContractAbi as abi from "../../modules/contract/CourseABI.json";
 type Props = {};
 
@@ -47,9 +50,11 @@ const ProgressUpdate = ({
     provider,
   } = useWalletAuth();
 
-  const [isMinting, setIsMinting] = useState(true);
+  const [isMinting, setIsMinting] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [throwConfetti, setThrowConfetti] = useState(false);
   const { toast } = useToast();
+  const { data: session, status } = useSession();
 
   courseNFTContract?.on("NFTMinted", (from, to, amount, event) => {
     console.log(amount, "event");
@@ -73,77 +78,50 @@ const ProgressUpdate = ({
   }
 
   function getCurrentChapters(course: any, unit: any, chapter: any): number {
-    console.log(unit, chapter);
-    let totalChapters = 0;
-    for (let i = 0; i <= unit; i++) {
-      for (let j = 0; j < course.units[i].chapters.length; j++) {
-        totalChapters++;
-        if (i === unit && j === chapter) {
-          return totalChapters;
-        }
-      }
+    if (unit === 0) {
+      return chapter + 1 + unit;
+    } else if (unit === 1) {
+      return chapter + 4 + unit;
+    } else {
+      return chapter + 7 + unit;
     }
-    return totalChapters;
   }
 
   async function progressUpdate() {
+    console.log(unit, chapter, "mike");
     const currentChapters = getCurrentChapters(course, unit, chapter);
-    const totalChapters = getTotalChapters(course);
-    console.log(currentChapters, totalChapters, "called");
-    const progress = (currentChapters / totalChapters) * 100;
+    // const totalChapters = getTotalChapters(course);
+    // console.log(currentChapters, totalChapters, "called");
+    const progress = (currentChapters / 12) * 100;
+
+    const response = await axios.put("/api/users/token", {
+      token: session?.user?.token! + 50,
+    });
 
     // if progress is 100, then create NFT
     if (progress === 100) {
       setIsMinting(true);
-      await connect();
       setTimeout(() => {
         console.log(isConnected, "isConnected1");
       }, 1000);
       console.log(isConnected, "isConnected");
-      if (isConnected) {
-        const profile = await aiProfileContract!.getIndividualProfile(
-          profileTokenId
-        );
-        const tbaAddress = { ...profile }[2];
-        console.log(tbaAddress, "tbaAddress");
+      const { profileContract, courseContract }: any = await connect();
+      const profile = await profileContract!.getIndividualProfile(
+        profileTokenId
+      );
+      const tbaAddress = { ...profile }[2];
+      console.log(tbaAddress, "tbaAddress");
+      const tx = await courseContract!.mintCourse(tbaAddress, courseTokenId);
 
-        const tx = await courseNFTContract!.mintCourse(
-          tbaAddress,
-          courseTokenId
-        );
+      const response = await axios.post("/api/progress", {
+        completed: progress === 100 ? true : false,
+        courseId,
+        progress,
+      });
 
-        const response = await axios.post("/api/progress", {
-          completed: progress === 100 ? true : false,
-          courseId,
-          progress,
-        });
-
-        setProgress(progress);
-        // setComplete(true);
-      } else {
-        // stupid retry system
-        await connect();
-        console.log(isConnected, "isConnected 2");
-        const profile = await aiProfileContract!.getIndividualProfile(
-          profileTokenId
-        );
-        const tbaAddress = { ...profile }[2];
-        console.log(tbaAddress, "tbaAddress");
-
-        const tx = await courseNFTContract!.mintCourse(
-          tbaAddress,
-          courseTokenId
-        );
-
-        const response = await axios.post("/api/progress", {
-          completed: progress === 100 ? true : false,
-          courseId,
-          progress,
-        });
-
-        setProgress(progress);
-        setCompleted(true);
-      }
+      setProgress(progress);
+      setCompleted(true);
+      setThrowConfetti(true);
     } else {
       const response = await axios.post("/api/progress", {
         completed: progress === 100 ? true : false,
@@ -153,6 +131,7 @@ const ProgressUpdate = ({
 
       setProgress(progress);
       setCompleted(true);
+      setThrowConfetti(true);
       console.log(response.data, "updated");
     }
   }
@@ -162,9 +141,9 @@ const ProgressUpdate = ({
     async function checkProgress() {
       const response = await axios.get(`/api/progress?courseid=${courseId}`);
       const currentChapters = getCurrentChapters(course, unit, chapter);
-      const totalChapters = getTotalChapters(course);
+      // const totalChapters = getTotalChapters(course);
 
-      const progress: any = (currentChapters / totalChapters) * 100;
+      const progress: any = (currentChapters / 12) * 100;
       console.log(progress, response, "progress");
       setProgress(response?.data?.data?.progress || 0);
       if (response?.data?.data?.progress >= progress.toFixed(0)) {
@@ -173,14 +152,14 @@ const ProgressUpdate = ({
     }
 
     checkProgress();
-    setIsMinting(false);
+    // setIsMinting(false);
   }, [chapter, course, courseId, unit]);
   return (
     <div className="flex flex-col w-full justify-center items-center py-5">
       <div className="w-full">
         <CourseProgress value={progress} />
       </div>
-      {completed && <ConfettiComponent />}
+      {throwConfetti && <ConfettiComponent />}
       <Dialog open={isMinting} onOpenChange={setIsMinting}>
         <DialogContent onInteractOutside={(event) => event.preventDefault()}>
           <DialogHeader>
@@ -196,33 +175,82 @@ const ProgressUpdate = ({
             </DialogDescription>
           </DialogHeader>
           {completed ? (
-            <div className="flex justify-center items-center">
-              <Link href="/credentials">
-                <Button>My Credentials</Button>
-              </Link>
+            <div>
+              <Player
+                autoplay
+                loop
+                src="https://lottie.host/04d11dc8-3762-4aea-ab7b-322404cf8ec1/YOQ53KnAda.json"
+                style={{
+                  height: "300px",
+                  width: "300px",
+                  // borderRadius: "28px",
+                  // border: "3px solid black",
+                }}
+              />
+              <div className="flex justify-center items-center ">
+                <Link href="/credentials">
+                  <Button className="rounded-3xl">Go to My Profile</Button>
+                </Link>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center">
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Please wait a moment while we mint your course NFT...
+            <div>
+              <Player
+                autoplay
+                loop
+                src="https://lottie.host/0a34a2ae-759c-45fd-a975-e69c50404461/U6jSLu1A2r.json"
+                style={{
+                  height: "120px",
+                  width: "120px",
+                  borderRadius: "28px",
+                  // border: "3px solid black",
+                }}
+              />
+              <Player
+                autoplay
+                loop
+                src="https://lottie.host/aea0f286-6d85-49bc-af0e-d1fbf6fee296/CKjsHErOf4.json"
+                style={{
+                  height: "20px",
+                  width: "120px",
+                  paddingTop: "2px",
+                }}
+              />
+              <div className="flex items-center justify-center pt-2">
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Please wait a moment while we mint your course NFT...
+              </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
-      {/* 
-      {completed ? (
-        <Button
-          onClick={() => progressUpdate()}
-          className="w-72"
-          disabled={completed || progress === 100}
-        >
-          Completed 🙌
-        </Button>
-      ) : (
-        <Button onClick={() => progressUpdate()} className="w-72">
-          I have finished this chapter!
-        </Button>
-      )} */}
+
+      <div className="fixed bottom-10">
+        {completed ? (
+          <Button
+            onClick={() => progressUpdate()}
+            className="w-68 px-6 rounded-3xl bg-purple-600 py-6 flex flex-row gap-x-2"
+            disabled={completed || progress === 100}
+          >
+            <div> Completed 🙌</div>
+            {/* <div className="pl-2 bg-purple-800 p-2 rounded-2xl flex flex-row items-center justify-center gap-x-1 px-2 font-2xs">
+              50
+              <Image src={CoinSVG} height={20} width={20} alt={"buddy"} />
+            </div> */}
+          </Button>
+        ) : (
+          <Button
+            onClick={() => progressUpdate()}
+            className="w-68 px-6 rounded-3xl bg-purple-600 py-6 flex flex-row gap-x-2"
+          >
+            <div> Lesson Complete</div>
+            <div className="pl-2 bg-purple-800 p-2 rounded-2xl flex flex-row items-center justify-center gap-x-1 px-2 font-2xs">
+              50
+              <Image src={CoinSVG} height={20} width={20} alt={"buddy"} />
+            </div>
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

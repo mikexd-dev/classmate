@@ -19,28 +19,36 @@ import { toast } from "@/components/ui/use-toast";
 
 const items = [
   {
-    id: "Cycles in plants",
-    label: "Cycles in plants",
+    id: "Exploring Diversity of Matter by its Physical Properties",
+    label: "Exploring Diversity of Matter by its Physical Properties",
   },
   {
-    id: "Interaction of forces",
-    label: "Interaction of forces",
+    id: "Exploring Diversity of Matter by its Chemical Composition",
+    label: "Exploring Diversity of Matter by its Chemical Composition",
   },
   {
-    id: "Energy forms",
-    label: "Energy forms",
+    id: "Model of Cells - the Basic Unit of Life",
+    label: "Model of Cells - the Basic Unit of Life",
   },
   {
-    id: "Human digestive system",
-    label: "Human digestive system",
+    id: "Model of Matter - Atoms and Molecules",
+    label: "Model of Matter - Atoms and Molecules ",
   },
   {
-    id: "Human sexual reproduction",
-    label: "Human sexual reproduction",
+    id: "Application of Forces and Transfer of Energy",
+    label: "Application of Forces and Transfer of Energy",
   },
   {
-    id: "I have not started on any topics yet",
-    label: "I have not started on any topics yet",
+    id: "Transfer of Heat Energy and its Effects",
+    label: "Transfer of Heat Energy and its Effects",
+  },
+  {
+    id: "Transport Systems in Living Things",
+    label: "Transport Systems in Living Things",
+  },
+  {
+    id: "Human Sexual Reproductive System",
+    label: "Human Sexual Reproductive System",
   },
 ] as const;
 
@@ -77,7 +85,7 @@ export function TopicsForm({ setTopics, topics }: any) {
               <div className="mb-4">
                 <FormLabel className="text-base">
                   <div className="font-semibold text-3xl pb-5">
-                    Sharing with us the topics you have learnt?
+                    Share with us the topics you wish to learn
                   </div>
                 </FormLabel>
                 <FormDescription>You can select more than one</FormDescription>

@@ -1,6 +1,7 @@
 import CompanionChat from "@/components/course/CompanionChat";
 import { CourseProgress } from "@/components/course/CourseProgress";
 import CourseSideBar from "@/components/course/CourseSideBar";
+import MainQuiz from "@/components/course/MainQuiz";
 import MainVideoSummary from "@/components/course/MainVideoSummary";
 import ProgressUpdate from "@/components/course/ProgressUpdate";
 import QuizCards from "@/components/course/QuizCards";
@@ -52,14 +53,15 @@ const CoursePage = async ({ params: { slug } }: Props) => {
   if (!unit) {
     return redirect("/dashboard");
   }
+
   const chapter = unit.chapters[chapterIndex];
-  if (!chapter) {
+  if (!chapter && chapterIndex !== 3) {
     return redirect("/dashboard");
   }
-  const nextChapter = unit.chapters[chapterIndex + 1];
-  const prevChapter = unit.chapters[chapterIndex - 1];
+  // const nextChapter = unit.chapters[chapterIndex + 1];
+  // const prevChapter = unit.chapters[chapterIndex - 1];
 
-  console.log(session, "coursepage");
+  // console.log(session, "coursepage");
 
   return (
     <div className="py-10">
@@ -81,67 +83,35 @@ const CoursePage = async ({ params: { slug } }: Props) => {
           </div>
         </div>
       </div> */}
-      <div className="flex flex-row space-x-8 justify-end items-start px-8 pt-16 mx-auto sm:justify-between ">
-        <CourseSideBar course={course} currentChapterId={chapter.id} />
-        <div className="flex-[3]">
-          <MainVideoSummary
-            chapter={chapter}
-            chapterIndex={chapterIndex}
-            unit={unit}
-            unitIndex={unitIndex}
+      <div className="flex flex-row space-x-8 items-start pt-16 mx-auto sm:justify-between max-w-7xl">
+        <div className="flex-1">
+          <CourseSideBar
+            course={course}
+            currentChapterId={
+              chapterIndex === 3 ? chapterIndex.toString() : chapter.id
+            }
+            currentUnit={unitIndex}
           />
         </div>
-        <CompanionChat />
-        {/* {chapter.questions.length > 0 && <QuizCards chapter={chapter} />} */}
+
+        <div className="flex-3">
+          {chapterIndex === 3 ? (
+            <MainQuiz unit={unit} unitIndex={unitIndex} />
+          ) : (
+            <MainVideoSummary
+              chapter={chapter}
+              chapterIndex={chapterIndex}
+              unit={unit}
+              unitIndex={unitIndex}
+            />
+          )}
+        </div>
+        <div className="flex-1">
+          <CompanionChat />
+        </div>
       </div>
 
-      <div className="px-8 mx-auto sm:justify-between max-w-7xl">
-        {/* <ProgressUpdate
-          unit={unitIndex}
-          chapter={chapterIndex}
-          course={course}
-          courseId={courseId}
-          courseTokenId={course.courseTokenId}
-          profileTokenId={session?.user?.tokenProfileId!}
-        /> */}
-        {/* <div className="flex pb-8 flex-row justify-between ">
-          {prevChapter && (
-            <Link
-              href={`/course/${course.id}/${unitIndex}/${chapterIndex - 1}`}
-              className="flex mt-4 mr-auto w-fit flex-1"
-            >
-              <div className="flex items-center">
-                <ChevronLeft className="w-6 h-6 mr-1" />
-                <div className="flex flex-col items-start">
-                  <span className="text-sm text-secondary-foreground/60">
-                    Previous
-                  </span>
-                  <span className="text-md font-bold">{prevChapter.name}</span>
-                </div>
-              </div>
-            </Link>
-          )}
-
-          {nextChapter && (
-            <Link
-              href={`/course/${course.id}/${unitIndex}/${chapterIndex + 1}`}
-              className="flex mt-4 ml-auto w-fit flex-1 justify-self-end"
-            >
-              <div className="flex items-end">
-                <div className="flex flex-col items-end">
-                  <span className="text-sm text-secondary-foreground/60">
-                    Next
-                  </span>
-                  <span className="text-md font-bold text-right">
-                    {nextChapter.name}
-                  </span>
-                </div>
-                <ChevronRight className="w-6 h-6 ml-1" />
-              </div>
-            </Link>
-          )}
-        </div> */}
-      </div>
+      <div className="px-8 mx-auto sm:justify-between max-w-7xl"></div>
     </div>
   );
 };

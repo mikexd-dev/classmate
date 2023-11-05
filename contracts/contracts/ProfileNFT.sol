@@ -15,7 +15,7 @@ contract ProfileNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
     Counters.Counter private _tokenIdCounter;
     event NFTMinted(address indexed creator, uint256 tokenId);
     
-    constructor() ERC721("AIducationProfile", "AIP") {}
+    constructor() ERC721("ClassMateBuddy", "CMB") {}
 
     struct Profile {
         uint256 tokenId;
@@ -114,7 +114,7 @@ contract ProfileNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://aiducation.s3.ap-southeast-1.amazonaws.com/profile/";
+        return "https://aiclassmate.s3.ap-southeast-1.amazonaws.com/profile/";
     }
 
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns(string memory) {

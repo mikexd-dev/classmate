@@ -75,21 +75,23 @@ export async function POST(req: Request, res: Response) {
         session?.user?.topics
       )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
         wrongAnswers
-      )}. These could be the topics that the student is weak in. I only want to generate 3 units, no more and no less.`,
+      )}. These could be the topics that the student is weak in. Please generate 3 units of object, return the result in an array. Here is an example of a json output: 
+       [{"unit": 'unit name'},
+        {"unit": 'unit name'},
+        {"unit": 'unit name'}]`,
       new Array(3).fill(
         `It is your job to create a unit about ${title} of a ${
           session?.user?.grade
         } student. The student wishes to learn the following topics (separated by comma): ${JSON.stringify(
           session?.user?.topics
-        )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
-          wrongAnswers
-        )}. The user has requested to create units for each of the course. These could be the topics that the student is weak in.`
+        )}. `
       ),
       {
         unit: "title of the unit",
       }
     );
 
+    console.log(units, "units");
     // only take the first 3 units
     units = units.slice(0, 3);
 
@@ -100,9 +102,12 @@ export async function POST(req: Request, res: Response) {
         session?.user?.topics
       )}. There was a revision quiz given on the topics and here are the questions that student has gotten wrong (separated by comma): ${JSON.stringify(
         wrongAnswers
-      )}. These could be the topics that the student is weak in., coming up with relevant chapter titles, and finding relevant youtube videos for each chapter. You are limited to a minimum and maximum 3 units. Do not have more or less, just 3 units per chapter`,
+      )}. These could be the topics that the student is weak in., coming up with relevant chapter titles, and finding relevant youtube videos for each chapter. Please generate 3 chapters of object, return the result in an array.Here is an example of a json output: 
+       [{"title":"Energy forms","chapters":[{"chapter_title":"Forms of Energy explained","youtube_search_query":"Introduction to Forms of Energy"},{"chapter_title":"Renewable and Non-Renewable Energy Sources","youtube_search_query":"Renewable vs Non-Renewable Energy Sources"},{"chapter_title":"Energy Conversion and Efficiency","youtube_search_query":"Energy Conversion and Efficiency"}]},
+       {"title":"Energy forms","chapters":[{"chapter_title":"Forms of Energy explained","youtube_search_query":"Introduction to Forms of Energy"},{"chapter_title":"Renewable and Non-Renewable Energy Sources","youtube_search_query":"Renewable vs Non-Renewable Energy Sources"},{"chapter_title":"Energy Conversion and Efficiency","youtube_search_query":"Energy Conversion and Efficiency"}]},
+       {"title":"Energy forms","chapters":[{"chapter_title":"Forms of Energy explained","youtube_search_query":"Introduction to Forms of Energy"},{"chapter_title":"Renewable and Non-Renewable Energy Sources","youtube_search_query":"Renewable vs Non-Renewable Energy Sources"},{"chapter_title":"Energy Conversion and Efficiency","youtube_search_query":"Energy Conversion and Efficiency"}]}]`,
       new Array(3).fill(
-        `It is your job to create a course about ${title}. The user has requested to create chapters for each of the units. Then, for each chapter, provide a detailed youtube search query that can be used to find an informative educationalvideo for each chapter. Each query should give an educational informative course in youtube. `
+        `The user has requested to create chapters for each of the units. Then, for each chapter, provide a detailed youtube search query that can be used to find an informative educational video for each chapter. Each query should give an educational informative course in youtube with the context of secondary school science courses such as O level examination topics in sciences (physics, biology, chemistry). `
       ),
       {
         title: "title of the unit",
@@ -111,8 +116,11 @@ export async function POST(req: Request, res: Response) {
       }
     );
 
+    console.log(output_units, "output_units");
+
     // only take the first 3 chapters of each unit
     output_units = output_units.map((unit) => {
+      console.log(unit, "why unit why");
       return {
         title: unit.title,
         chapters: unit.chapters.slice(0, 3),

@@ -14,10 +14,10 @@ type Props = {
       chapters: Chapter[];
     })[];
   };
-  setStartCourse: any;
+  // setStartCourse: any;
 };
 
-const ConfirmChapters = ({ course, setStartCourse }: Props) => {
+const ConfirmChapters = ({ course }: Props) => {
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const [chapterCount, setChapterCount] = React.useState(0);
@@ -29,6 +29,9 @@ const ConfirmChapters = ({ course, setStartCourse }: Props) => {
     });
   });
   const [completedChapters, setCompletedChapters] = React.useState<Set<String>>(
+    new Set()
+  );
+  const [failedChapters, setFailedChapters] = React.useState<Set<String>>(
     new Set()
   );
   const totalChaptersCount = React.useMemo(() => {
@@ -52,11 +55,20 @@ const ConfirmChapters = ({ course, setStartCourse }: Props) => {
 
   useEffect(() => {
     console.log(totalChaptersCount, completedChapters.size, chapterCount);
-    if (completedChapters.size === 9) {
+    if (completedChapters.size === 9 && failedChapters.size === 0) {
       console.log(completedChapters, "completed");
-      setStartCourse(true);
+      // setStartCourse(true);
+      router.push(`/course/${course.id}/0/0`);
     }
-  }, [completedChapters.size, totalChaptersCount]);
+  }, [
+    completedChapters.size,
+    totalChaptersCount,
+    failedChapters.size,
+    completedChapters,
+    chapterCount,
+    router,
+    course.id,
+  ]);
   // console.log(completedChapters, "completed");
 
   return (
@@ -76,6 +88,7 @@ const ConfirmChapters = ({ course, setStartCourse }: Props) => {
                   <ChapterCard
                     completedChapters={completedChapters}
                     setCompletedChapters={setCompletedChapters}
+                    setFailedChapters={setFailedChapters}
                     ref={chapterRefs[chapter.id]}
                     key={chapter.id}
                     chapter={chapter}

@@ -37,34 +37,51 @@ const DashboardPage = async (props: Props) => {
   });
 
   return (
-    <div>
-      <Navbar />
-      <div className="py-8 mx-auto max-w-7xl mt-10 px-10">
-        <CreateCourseForm />
-        <h1 className="font-bold text-center py-2">Courses</h1>
-        <Separator className="flex-[1] mb-5" />
-        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
-          {courses.map((item: any) => (
-            // check if userprogress course includes course id
-            // if it does, then show the progress
-            // else show 0
-            <CourseCard
-              key={item.id}
-              id={item.id}
-              title={item.name}
-              imageUrl={item.image!}
-              chaptersLength={item.units.length}
-              users={item.users.length!}
-              progress={
-                userProgress.find((up) => up.courseId === item.id)
-                  ? userProgress.find((up) => up.courseId === item.id)
-                      ?.progress!
-                  : 0
-              }
-              category={"category"}
-            />
-          ))}
+    <div className="bg-stone-100">
+      <Navbar newToken={session?.user?.token} />
+      <div className="flex flex-row mt-16 pt-12 max-w-7xl mx-auto">
+        <div className="flex-[1_0_0%] p-5">
+          <div className="text-black font-oi text-3xl pb-5">
+            Welcome <br />
+            {session?.user?.name.split(" ")[0]}
+          </div>
+          <div className="text-black  text-sm font-light">
+            View all your courses and <br />
+            track your learning progress
+          </div>
         </div>
+        <div className="flex-[3_0_0%] p-5">
+          <div className="flex flex-row w-full justify-between items-center">
+            <h1 className="text-center py-2 text-xl font-semibold">Courses</h1>
+            <CreateCourseForm />
+          </div>
+          <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {courses.map((item: any) => (
+              // check if userprogress course includes course id
+              // if it does, then show the progress
+              // else show 0
+              <CourseCard
+                key={item.id}
+                id={item.id}
+                title={item.name}
+                imageUrl={item.image!}
+                chaptersLength={item.units.length}
+                users={item.users.length!}
+                progress={
+                  userProgress.find((up) => up.courseId === item.id)
+                    ? userProgress.find((up) => up.courseId === item.id)
+                        ?.progress!
+                    : 0
+                }
+                category={"category"}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="py-8 mx-auto max-w-7xl mt-10 px-10">
+        {/* <CreateCourseForm />
+        <h1 className="font-bold text-center py-2">Courses</h1> */}
       </div>
     </div>
   );

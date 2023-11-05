@@ -9,6 +9,12 @@ import {
   faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   course: Course & {
@@ -17,11 +23,16 @@ type Props = {
     })[];
   };
   currentChapterId: string;
+  currentUnit: any;
 };
 
-const CourseSideBar = async ({ course, currentChapterId }: Props) => {
+const CourseSideBar = async ({
+  course,
+  currentChapterId,
+  currentUnit,
+}: Props) => {
   return (
-    <div className="max-w-[260px] p-6 rounded-r-3xl ">
+    <div className="min-w-[240px] max-w-[300px] px-2 rounded-r-3xl ">
       {/* <h1 className="text-lg font-bold">{course.name}</h1> */}
       {course.units.map((unit, unitIndex) => {
         if (unitIndex > 2) return;
@@ -54,8 +65,17 @@ const CourseSideBar = async ({ course, currentChapterId }: Props) => {
                     href={`/course/${course.id}/${unitIndex}/${chapterIndex}`}
                     className={cn("text-black text-sm ")}
                   >
-                    {chapter?.name.replace(/^.*:/, "").substring(0, 20) ||
-                      chapter.name}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {chapter?.name.replace(/^.*:/, "").substring(0, 20) ||
+                            chapter.name}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{chapter?.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </Link>
                 </div>
               );
@@ -63,7 +83,11 @@ const CourseSideBar = async ({ course, currentChapterId }: Props) => {
             <div
               className={cn(
                 "flex flex-row items-center justify-start p-2 pl-3",
-                {}
+                {
+                  "bg-stone-200 font-bold text-black rounded-lg ":
+                    currentChapterId === JSON.stringify(3) &&
+                    currentUnit === unitIndex,
+                }
               )}
             >
               {
@@ -74,7 +98,7 @@ const CourseSideBar = async ({ course, currentChapterId }: Props) => {
                 />
               }
               <Link
-                href={`/course/${course.id}/${unitIndex}/quiz`}
+                href={`/course/${course.id}/${unitIndex}/3`}
                 className={cn("text-black text-sm ")}
               >
                 Quiz

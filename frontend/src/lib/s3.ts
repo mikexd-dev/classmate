@@ -29,7 +29,7 @@ type nftCourse = {
 
 export async function uploadJson(jsonData: nftCourse, tokenId: string) {
   const params = {
-    Bucket: "aiducation",
+    Bucket: "aiclassmate",
     Key: `course/${tokenId}.json`,
     Body: JSON.stringify(jsonData),
     ContentType: "application/json",

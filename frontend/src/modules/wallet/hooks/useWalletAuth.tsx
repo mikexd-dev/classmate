@@ -37,9 +37,9 @@ export function useWalletAuth() {
   const apiKey = process.env.NEXT_PUBLIC_COMETH_API_KEY!;
   const COUNTER_CONTRACT_ADDRESS = "0x3633A1bE570fBD902D10aC6ADd65BB11FC914624";
   const AI_PROFILE_CONTRACT_ADDRESS =
-    "0x22c9d6fa7e72f751f8af7f81a333f068c9d9a0ef";
+    "0x02faade50682498bf0bc7c804919e2b21de54bec";
   const COURSE_NFT_CONTRACT_ADDRESS =
-    "0xc8049e79740b6de70b36a53ab7b6ef74f0394f38";
+    "0x29c7b38e5c2e530ca6d9b4e21b632c38a55bdc03";
 
   const { data: session, status, update } = useSession();
 

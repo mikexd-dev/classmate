@@ -17,11 +17,11 @@ const page = async (props: Props) => {
     <div>
       <Navbar />
       <div className="py-8 mx-auto max-w-7xl mt-10 px-10 flex flex-col items-center justify-center">
-        <div className="text-3xl font-light">AIducation Credentials</div>
+        <div className="text-3xl font-light">Classmate Credentials</div>
         <div className="text-sm font-light w-[50%] pt-3">
           All course NFTs will be minted directly to your ERC6551 profile token
           bound account. This help to keep your wallet clean and tidy, and
-          organise all Aiducation related credentials (and future incentives 😉)
+          organise all Classmate related credentials (and future incentives 😉)
           in one place.
         </div>
         <div className="flex items-center px-2 py-1 mt-2 border-none bg-orange-100 text-xs rounded-xl w-[50%]">
@@ -36,7 +36,7 @@ const page = async (props: Props) => {
         <iframe
           width="600"
           height="600"
-          src={`https://iframe-tokenbound.vercel.app/0x22c9d6fa7e72f751f8af7f81a333f068c9d9a0ef/${session?.user?.tokenProfileId}/80001`}
+          src={`https://iframe-tokenbound.vercel.app/0x02faade50682498bf0bc7c804919e2b21de54bec/${session?.user?.tokenProfileId}/80001`}
           title="YouTube video player"
         />
       </div>

@@ -1,7 +1,7 @@
 // /api/chapter/retrieve
 
 import { prisma } from "@/lib/db";
-import { strict_output } from "@/lib/gpt";
+import { normal_gpt, strict_output } from "@/lib/gpt";
 import {
   getQuestionsFromTranscript,
   getTranscript,
@@ -43,12 +43,14 @@ export async function POST(req: Request, res: Response) {
     let maxLength = 400;
     transcript = transcript.split(" ").slice(0, maxLength).join(" ");
 
-    const { summary }: { summary: string } = await strict_output(
+    const summary: string = await normal_gpt(
       "You are an AI capable of summarising a youtube transcript",
-      "summarise in 250 words or less and do not talk of the sponsors or anything unrelated to the main topic, also do not introduce what the summary is about.\n" +
+      "summarise in 250 words or less and do not talk of the sponsors or anything unrelated to the main topic, also do not introduce what the summary is about, place emphasis on the key topic and concept, bold the key terms. Return the result in markdown, Create only 3 paragraphs maximum, by using '' after each paragraph, do not exceed 250 words. \n" +
         transcript,
       { summary: "summary of the transcript" }
     );
+
+    console.log(summary, "summary");
 
     // generate questions
     const questions = await getQuestionsFromTranscript(

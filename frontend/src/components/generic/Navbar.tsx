@@ -1,5 +1,3 @@
-// "use client";
-
 import Link from "next/link";
 import React from "react";
 import SignInButton from "../SignInButton";
@@ -10,10 +8,10 @@ import { Button } from "../ui/button";
 import ProfileDialog from "./ProfileDialog";
 import { useSession } from "next-auth/react";
 import { profile } from "console";
-
+import Image from "next/image";
 type Props = {};
 
-const Navbar = async ({ children }: any) => {
+const Navbar = async ({ children, newToken }: any) => {
   // const [open, setOpen] = React.useState(false);
   let profileTokenid: any = null;
   const session = await getAuthSession();
@@ -28,27 +26,37 @@ const Navbar = async ({ children }: any) => {
       /> */}
       <div className="flex items-center justify-center h-full gap-2 px-2 mx-auto sm:justify-between max-w-7xl">
         <Link href="/dashboard" className="items-center hidden gap-2 sm:flex">
-          <div className="font-light text-2xl flex flex-row pl-8">
-            <div className="font-medium">Crypto</div>Hack
+          <div className="font-light text-2xl flex flex-row ">
+            Class<div className="font-medium">Mate</div>
           </div>
         </Link>
         {children}
         <div className="flex items-center">
-          {/* {session?.user && (
+          {session?.user && (
             <>
               <Link
                 href="/credentials"
-                className="items-center hidden gap-2 sm:flex"
+                className="items-center hidden gap-2 sm:flex pr-5"
               >
-                <Button
+                {/* <Button
                   className="mr-3 bg-pink-200 text-black hover:text-white"
                   // onClick={() => setOpen(true)}
                 >
                   Credentials
-                </Button>
+                </Button> */}
+                <div className="flex flex-row items-center rounded-full border border-yellow-500 bg-yellow-100 text-yellow-800 text-xs font-light font-oi p-2 w-20">
+                  {session?.user?.token}
+                  <Image
+                    src="/coin.svg"
+                    height={30}
+                    width={30}
+                    alt={"token"}
+                    className="pl-2"
+                  />
+                </div>
               </Link>
             </>
-          )} */}
+          )}
           {/* <ThemeToggle className="mr-3" /> */}
           <div className="flex items-center">
             {session?.user ? (

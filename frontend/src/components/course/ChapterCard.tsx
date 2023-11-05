@@ -20,6 +20,7 @@ type Props = {
   chapterIndex: number;
   unitId: string;
   completedChapters: Set<String>;
+  setFailedChapters: React.Dispatch<React.SetStateAction<Set<String>>>;
   setCompletedChapters: React.Dispatch<React.SetStateAction<Set<String>>>;
 };
 
@@ -29,7 +30,14 @@ export type ChapterCardHandler = {
 
 const ChapterCard = React.forwardRef<ChapterCardHandler, Props>(
   (
-    { chapter, chapterIndex, setCompletedChapters, completedChapters, unitId },
+    {
+      chapter,
+      chapterIndex,
+      setCompletedChapters,
+      completedChapters,
+      unitId,
+      setFailedChapters,
+    },
     ref
   ) => {
     const { toast } = useToast();
@@ -59,6 +67,14 @@ const ChapterCard = React.forwardRef<ChapterCardHandler, Props>(
       });
     }, [chapter.id, setCompletedChapters]);
 
+    const addChapterIdtoFailedSet = React.useCallback(() => {
+      setFailedChapters((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(chapter.id);
+        return newSet;
+      });
+    }, [chapter.id, setFailedChapters]);
+
     React.useEffect(() => {
       if (chapter.videoId) {
         setSuccess(true);
@@ -85,7 +101,7 @@ const ChapterCard = React.forwardRef<ChapterCardHandler, Props>(
               description: "There was an error loading your chapter",
               variant: "destructive",
             });
-            addChapterIdToSet();
+            addChapterIdtoFailedSet();
           },
         });
       },

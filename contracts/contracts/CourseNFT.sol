@@ -46,7 +46,7 @@ contract CourseNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
 
     // The following functions are overrides required by Solidity.
     function _baseURI() internal pure override returns (string memory) {
-        return "https://aiducation.s3.ap-southeast-1.amazonaws.com/course/";
+        return "https://aiclassmate.s3.ap-southeast-1.amazonaws.com/course/";
     }
 
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns(string memory) {

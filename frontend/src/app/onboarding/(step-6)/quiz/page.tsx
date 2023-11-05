@@ -8,14 +8,16 @@ import { QuizForm } from "@/components/generic/QuizForm";
 import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import input from "postcss/lib/input";
 import { useMutation } from "@tanstack/react-query";
 import ConfirmChapters from "@/components/course/ConfirmChapters";
 import { set } from "zod";
+import { AnimatePresence, motion } from "framer-motion";
 type Props = {};
 
 export default function Page(props: Props) {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [quiz, setQuiz] = useState<any[]>([]);
   const [quizStep, setQuizStep] = useState(-1);
@@ -69,7 +71,8 @@ export default function Page(props: Props) {
     // });
     const quizStored = localStorage.getItem("quiz");
     setQuiz(JSON.parse(quizStored!));
-  }, []);
+    console.log(session, "session");
+  }, [session]);
 
   const checkAnswer = () => {
     const currentOption: any = quiz[quizStep];
@@ -112,20 +115,34 @@ export default function Page(props: Props) {
   const { mutate: createChapters, isLoading } = useMutation({
     mutationFn: async () => {
       const response = await axios.post("/api/course/chapters", {
-        title: "Secondary School Science",
+        title: "School Science",
         wrongAnswers: wrongAnswer,
       });
       return response.data;
     },
   });
 
-  const generateCourseOutline = () => {
+  const { mutate: updateToken } = useMutation({
+    mutationFn: async () => {
+      const response = await axios.put("/api/users/token", {
+        token: 200,
+      });
+      return response.data;
+    },
+  });
+
+  const generateCourseOutline = async () => {
+    // update quiz token
+    const response = await axios.put("/api/users/token", {
+      token: 200,
+    });
     createChapters(undefined, {
       onSuccess: ({ course }) => {
         toast({
           title: "Success",
           description: "Course created",
         });
+        router.push(`/create/${course.id}`);
         setCourse(course);
         console.log(course, "course_id");
         setQuizStep(quizStep + 1);
@@ -153,127 +170,141 @@ export default function Page(props: Props) {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="rounded-3xl bg-violet-700 w-[652px] h-[640px] shadow-md">
-        <div className="w-full h-full rounded-t-3xl backdrop-brightness-75">
-          <div className="text-white font-oi text-4xl font-normal p-6">
-            {isGeneratingCourse ? "Course Outline..." : "Quiz"}
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: {
+              duration: 1,
+              ease: [0.5, 0.71, 1, 1.5],
+              delayChildren: 0.5,
+              staggerChildren: 0.5,
+            },
+          }}
+          className="rounded-3xl bg-violet-700 w-[652px] h-[640px] shadow-md"
+        >
+          <div className="w-full h-full rounded-t-3xl backdrop-brightness-75">
+            <div className="text-white font-oi text-4xl font-normal p-6">
+              {isGeneratingCourse ? "Course Outline..." : "Quiz"}
+            </div>
           </div>
-        </div>
-        <div className="rounded-3xl bg-white absolute top-[24%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-start justify-between">
-          {quizStep === -1 ? (
-            <div>
-              <Image
-                src="../quiz.svg"
-                height={160}
-                width={588}
-                alt={"buddy"}
-                className="pb-5"
-              />
-              <div className="font-semibold text-2xl pb-2">
-                Here’s a short quiz to help us create your very own learning
-                course!
-              </div>
-              <div className="text-base">
-                They are 5 short questions that will take you less than 5
-                minutes to complete them.
-              </div>
-              <Image
-                src="../two-hundred-credits.svg"
-                height={52}
-                width={151}
-                alt={"buddy"}
-                className="pt-7"
-              />
-            </div>
-          ) : quizStep < 5 ? (
-            <div>
-              <div className="font-semibold text-3xl pb-2">
-                {quizStep + 1}. {quiz[quizStep].question!}
-              </div>
-              <div className="pt-7">
-                <QuizForm options={quiz[quizStep]} setOption={setOption} />
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div className="font-semibold text-3xl">
-                Generating your learning plan
-              </div>
-              <ConfirmChapters
-                course={course}
-                setStartCourse={setStartCourse}
-              />
-            </div>
-          )}
-
-          <div className="flex flex-row items-between justify-between w-full">
+          <div className="rounded-3xl bg-white absolute top-[27%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-start justify-between">
             {quizStep === -1 ? (
-              <Link href={"/onboarding/topics"}>
-                <Button
-                  className="p-8 px-10 rounded-full text-xl mr-5"
-                  variant={"secondary"}
-                >
-                  <ChevronLeft className="mr-2 w-6 h-6" strokeWidth={3} />
-                  Previous
-                </Button>
-              </Link>
+              <div>
+                <Image
+                  src="../quiz.svg"
+                  height={160}
+                  width={588}
+                  alt={"buddy"}
+                  className="pb-5"
+                />
+                <div className="font-semibold text-2xl pb-2">
+                  Here’s a short quiz to help us create your very own learning
+                  course!
+                </div>
+                <div className="text-base">
+                  They are 5 short questions that will take you less than 5
+                  minutes to complete them.
+                </div>
+                <Image
+                  src="../two-hundred-credits.svg"
+                  height={52}
+                  width={151}
+                  alt={"buddy"}
+                  className="pt-7"
+                />
+              </div>
+            ) : quizStep < 5 ? (
+              <div>
+                <div className="font-semibold text-3xl pb-2">
+                  {quizStep + 1}. {quiz[quizStep].question!}
+                </div>
+                <div className="pt-7">
+                  <QuizForm options={quiz[quizStep]} setOption={setOption} />
+                </div>
+              </div>
             ) : (
-              quizStep < 5 && (
-                <Button
-                  className="p-8 px-10 rounded-full text-xl mr-5"
-                  variant={"secondary"}
-                  onClick={() => previousQuestion()}
-                >
-                  <ChevronLeft className="mr-2 w-6 h-6" strokeWidth={3} />
-                  Previous
-                </Button>
-              )
+              <div>
+                <div className="font-semibold text-3xl">
+                  Generating your learning plan
+                </div>
+                {/* <ConfirmChapters
+                  course={course}
+                  setStartCourse={setStartCourse}
+                /> */}
+              </div>
             )}
-            {quizStep === -1 && (
-              <Button
-                className="p-8 px-10 rounded-full text-xl mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
-                onClick={() => setQuizStep(0)}
-                disabled={fetchQuizLoading}
-              >
-                {fetchQuizLoading ? "Fetching Quiz..." : "Let's Start"}
-                <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
-              </Button>
-            )}
-            {quizStep !== -1 && quizStep < 4 && (
-              <Button
-                className="p-8 px-10 rounded-full text-xl mr-5"
-                onClick={() => nextQuestion()}
-              >
-                Next
-                <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
-              </Button>
-            )}
-            {quizStep === 4 && (
-              <Button
-                className="p-8 px-10 rounded-full text-xl mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
-                onClick={() => generateCourseOutline()}
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating Course Outline..." : "Let's Go"}
-                <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
-              </Button>
-            )}
-          </div>
-          {isGeneratingCourse && (
-            <div className="flex flex-col items-end w-full pt-2">
-              <Link href={`/course/${course.id}/0/0`}>
+
+            <div className="flex flex-row items-between justify-between w-full">
+              {quizStep === -1 ? (
+                <Link href={"/onboarding/topics"}>
+                  <Button
+                    className="p-8 px-10 rounded-full text-xl mr-5"
+                    variant={"secondary"}
+                  >
+                    <ChevronLeft className="mr-2 w-6 h-6" strokeWidth={3} />
+                    Previous
+                  </Button>
+                </Link>
+              ) : (
+                quizStep < 5 && (
+                  <Button
+                    className="p-8 px-10 rounded-full text-xl mr-5"
+                    variant={"secondary"}
+                    onClick={() => previousQuestion()}
+                  >
+                    <ChevronLeft className="mr-2 w-6 h-6" strokeWidth={3} />
+                    Previous
+                  </Button>
+                )
+              )}
+              {quizStep === -1 && (
                 <Button
                   className="p-8 px-10 rounded-full text-xl mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
-                  disabled={courseStart}
+                  onClick={() => setQuizStep(0)}
+                  disabled={fetchQuizLoading}
                 >
-                  {"Let's Start"}
+                  {fetchQuizLoading ? "Fetching Quiz..." : "Let's Start"}
                   <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
                 </Button>
-              </Link>
+              )}
+              {quizStep !== -1 && quizStep < 4 && (
+                <Button
+                  className="p-8 px-10 rounded-full text-xl mr-5"
+                  onClick={() => nextQuestion()}
+                >
+                  Next
+                  <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
+                </Button>
+              )}
+              {quizStep === 4 && (
+                <Button
+                  className="p-8 px-10 rounded-full text-xl mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
+                  onClick={() => generateCourseOutline()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating Course Outline..." : "Let's Go"}
+                  <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
+                </Button>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+            {/* {isGeneratingCourse && (
+              <div className="flex flex-col items-end w-full pt-2">
+                <Link href={`/course/${course.id}/0/0`}>
+                  <Button
+                    className="p-8 px-10 rounded-full text-xl mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
+                    disabled={courseStart}
+                  >
+                    {"Let's Start"}
+                    <ChevronRight className="ml-2 w-6 h-6" strokeWidth={3} />
+                  </Button>
+                </Link>
+              </div>
+            )} */}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

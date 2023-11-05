@@ -16,6 +16,13 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
+import {
+  faCheckCircle,
+  faCircleXmark,
+  faCross,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { cn } from "@/lib";
 
 const FormSchema = z.object({
   type: z.enum(["all", "mentions", "none"], {
@@ -23,10 +30,17 @@ const FormSchema = z.object({
   }),
 });
 
-export function QuizForm({ options, setOption }: any) {
+export function QuizForm({
+  options,
+  setOption,
+  showAnswer = false,
+  selectedAnswer,
+}: any) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const answer = options.answer;
+  const [userAnswer, setUserAnswer] = useState("");
 
   const [arrayOption, setArrayOptions] = useState([]);
 
@@ -39,12 +53,12 @@ export function QuizForm({ options, setOption }: any) {
     ];
     // randomise the array
     const shuffled = array.sort(() => 0.5 - Math.random());
-    console.log(shuffled);
     setArrayOptions(shuffled);
   }, [options]);
 
   function onChange(input: any) {
     console.log(input.target.value);
+    setUserAnswer(input.target.value);
     setOption(input.target.value);
   }
 
@@ -60,6 +74,7 @@ export function QuizForm({ options, setOption }: any) {
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  disabled={showAnswer}
                   className="flex flex-col space-y-4"
                 >
                   {arrayOption.map((option: any, index: number) => (
@@ -70,9 +85,29 @@ export function QuizForm({ options, setOption }: any) {
                       <FormControl>
                         <RadioGroupItem value={option} />
                       </FormControl>
-                      <FormLabel className="text-xl font-semibold">
+                      <FormLabel
+                        className={cn("text-xl font-semibold", {
+                          "text-green-700": showAnswer && answer === option,
+                        })}
+                      >
                         {option}
                       </FormLabel>
+                      {showAnswer &&
+                        selectedAnswer === option &&
+                        answer !== option && (
+                          <FontAwesomeIcon
+                            icon={faCircleXmark}
+                            style={{ color: "red" }}
+                            className="h-5 w-5 mr-2"
+                          />
+                        )}
+                      {showAnswer && answer === option && (
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          style={{ color: "green" }}
+                          className="h-5 w-5 mr-2"
+                        />
+                      )}
                     </FormItem>
                   ))}
                 </RadioGroup>

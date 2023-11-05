@@ -42,7 +42,7 @@ export function GradeForm({ setGrade }: any) {
             <FormItem className="space-y-3">
               <FormLabel>
                 <div className="font-semibold text-3xl pb-5">
-                  What science grade are you in?
+                  What grade are you in?
                 </div>
               </FormLabel>
               <FormControl>
