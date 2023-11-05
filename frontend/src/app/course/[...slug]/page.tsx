@@ -63,6 +63,12 @@ const CoursePage = async ({ params: { slug } }: Props) => {
 
   // console.log(session, "coursepage");
 
+  const chat = await prisma.chats.findFirst({
+    where: {
+      userId: session!.user?.id,
+    },
+  });
+
   return (
     <div className="py-10">
       <Navbar>
@@ -93,6 +99,9 @@ const CoursePage = async ({ params: { slug } }: Props) => {
             currentUnit={unitIndex}
           />
         </div>
+        <CompanionChat chatId={chat!.id} />
+        {/* {chapter.questions.length > 0 && <QuizCards chapter={chapter} />} */}
+      </div>
 
         <div className="flex-3">
           {chapterIndex === 3 ? (
