@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { createChaptersSchema } from "@/lib/validators";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useWalletAuth } from "@/modules/wallet/hooks/useWalletAuth";
+import DialogCourse from "./DialogCourse";
 type Props = {};
 
 type Input = z.infer<typeof createChaptersSchema>;
@@ -61,6 +62,8 @@ const CreateCourseForm = (props: Props) => {
     });
   };
 
+  const [isOpen, setOpen] = useState(false);
+
   return (
     <div className="">
       {/* <form onSubmit={handleSubmit} className="w-full my-5">
@@ -91,15 +94,17 @@ const CreateCourseForm = (props: Props) => {
         </div>
       </form> */}
 
-      <Button
+      <DialogCourse />
+      <div></div>
+      {/* <Button
         className="p-6 rounded-full text-sm mr-5 bg-purple-600 drop-shadow-md cursor-pointer"
-        // onClick={() => setQuizStep(0)}
+        onClick={() => setOpen(true)}
         disabled={isLoading}
       >
         <PlusIcon className="mr-2 w-4 h-4" strokeWidth={3} />
         {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
         New Course
-      </Button>
+      </Button> */}
 
       {/* <Button
         type="submit"

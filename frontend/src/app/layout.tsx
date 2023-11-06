@@ -5,6 +5,8 @@ import { Oi, Inter } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib";
+// import "../styles/dist.css";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const oi = Oi({
