@@ -37,7 +37,7 @@ const DashboardPage = async (props: Props) => {
   });
 
   return (
-    <div className="bg-stone-100 min-h-screen">
+    <div className=" min-h-screen">
       <Navbar newToken={session?.user?.token} />
       <div className="flex flex-row mt-16 pt-12 max-w-7xl mx-auto">
         <div className="flex-[1_0_0%] p-5">
