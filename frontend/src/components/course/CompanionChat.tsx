@@ -16,6 +16,7 @@ import { subscribe, useSnapshot, snapshot } from "valtio";
 import { debounce } from "lodash";
 import { uuidV4 } from "ethers";
 import { state } from "./MainQuiz";
+import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu";
 
 const profiles = [
   {
@@ -62,11 +63,11 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
       chatId,
     },
     onResponse: (response) => {
-      console.log("response", response);
+      // console.log("response", response);
       // setQuiz(response.data.quiz);
     },
     onFinish: () => {
-      console.log("finished ->>>", completion, messages[messages.length - 1]);
+      // console.log("finished ->>>", completion, messages[messages.length - 1]);
       // if (completion !== "") {
       //   setMessages([
       //     ...messages,
@@ -87,22 +88,14 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     const debouncedLogHi = debounce(async () => {
       //TODO: terry this is like the only method i can figure out how to work using vercel ai, u can see if there is a better way, but it works now just without streaming
       if (currentQuiz?.question === state.quizQnAns?.question && showAnswer) {
-        console.log("correct on the same quiz");
-        const newMessages: any = [
+        setLoadingQuizExplanation(true);
+
+        // api call to openAI completion
+        const completed = await complete(JSON.stringify(state.quizQnAns));
+        const newMessages2: any = [
           ...messages,
           {
             id: messages[messages.length - 1].id + 1,
-            role: "user",
-            content: currentQuiz.question,
-          },
-        ];
-        setMessages([...newMessages]);
-        setLoadingQuizExplanation(true);
-        const completed = await complete(JSON.stringify(state.quizQnAns));
-        const newMessages2: any = [
-          ...newMessages,
-          {
-            id: newMessages[newMessages.length - 1].id + 1,
             role: "assistant",
             content: completed,
           },
@@ -111,6 +104,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
         setLoadingQuizExplanation(false);
       }
     }, 200);
+
     debouncedLogHi();
   }, [snap.quizQnAns]);
 
