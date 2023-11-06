@@ -43,7 +43,7 @@ export default function Page(props: Props) {
           <div className="rounded-3xl bg-white absolute top-[27%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-end justify-between">
             <div>
               <div className="font-semibold text-3xl pb-2">
-                Hey {session?.user?.name.split(" ")[0]}, welcome to CryptoHack!
+                Hey {session?.user?.name.split(" ")[0]}, welcome to Classmate!
               </div>
               <div className="text-xl">
                 We are here to help you achieve your learning goals with the

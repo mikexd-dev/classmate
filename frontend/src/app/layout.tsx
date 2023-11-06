@@ -14,7 +14,7 @@ const oi = Oi({
 });
 
 export const metadata: Metadata = {
-  title: "CryptoHack",
+  title: "Classmate",
   description: "Your Personalised Learning Companion",
 };
 
