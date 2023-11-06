@@ -18,9 +18,9 @@ const Page = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session, status } = useSession();
   const { width: windowWidth, height: windowHeight } = useWindowSize();
-  if (session?.user) {
-    redirect("/onboarding");
-  }
+  // if (session?.user) {
+  //   redirect("/onboarding");
+  // }
   return (
     <div className="">
       {windowWidth >= 1440 && (
@@ -39,7 +39,9 @@ const Page = (props: Props) => {
               <div className="flex items-center">
                 <Button
                   className="p-6 px-8 rounded-full text-sm mr-5"
-                  onClick={() => signIn("google")}
+                  onClick={() =>
+                    signIn("google", { callbackUrl: "/onboarding" })
+                  }
                 >
                   Free Sign up
                 </Button>
@@ -149,7 +151,9 @@ const Page = (props: Props) => {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <Button
                   className="bg-purple-500 p-8 px-10 rounded-full text-xl mr-5 mb-20"
-                  onClick={() => signIn("google")}
+                  onClick={() =>
+                    signIn("google", { callbackUrl: "/onboarding" })
+                  }
                 >
                   Try for Free
                 </Button>

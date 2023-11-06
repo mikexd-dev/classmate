@@ -37,7 +37,7 @@ const DashboardPage = async (props: Props) => {
   });
 
   return (
-    <div className="bg-stone-100">
+    <div className="bg-stone-100 min-h-screen">
       <Navbar newToken={session?.user?.token} />
       <div className="flex flex-row mt-16 pt-12 max-w-7xl mx-auto">
         <div className="flex-[1_0_0%] p-5">
@@ -55,27 +55,31 @@ const DashboardPage = async (props: Props) => {
             <h1 className="text-center py-2 text-xl font-semibold">Courses</h1>
             <CreateCourseForm />
           </div>
-          <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {courses.map((item: any) => (
-              // check if userprogress course includes course id
-              // if it does, then show the progress
-              // else show 0
-              <CourseCard
-                key={item.id}
-                id={item.id}
-                title={item.name}
-                imageUrl={item.image!}
-                chaptersLength={item.units.length}
-                users={item.users.length!}
-                progress={
-                  userProgress.find((up) => up.courseId === item.id)
-                    ? userProgress.find((up) => up.courseId === item.id)
-                        ?.progress!
-                    : 0
-                }
-                category={"category"}
-              />
-            ))}
+
+          <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
+            {courses.map((item: any) => {
+              // if (item.createdBy !== session?.user.id) return;
+              return (
+                // check if userprogress course includes course id
+                // if it does, then show the progress
+                // else show 0
+                <CourseCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.name}
+                  imageUrl={item.image!}
+                  chaptersLength={item.units.length}
+                  users={item.users.length!}
+                  progress={
+                    userProgress.find((up) => up.courseId === item.id)
+                      ? userProgress.find((up) => up.courseId === item.id)
+                          ?.progress!
+                      : 0
+                  }
+                  category={"category"}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

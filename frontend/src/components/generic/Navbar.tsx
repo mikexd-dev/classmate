@@ -29,8 +29,15 @@ const Navbar = ({ children, newToken }: any) => {
       /> */}
       <div className="flex items-center justify-center h-full gap-2 px-2 mx-auto sm:justify-between max-w-7xl">
         <Link href="/dashboard" className="items-center hidden gap-2 sm:flex">
-          <div className="font-light text-2xl flex flex-row ">
-            Class<div className="font-medium">Mate</div>
+          <div className="font-normal text-2xl flex flex-row justify-center items-center">
+            <Image
+              src="/logo.svg"
+              height={44}
+              width={44}
+              alt={"logo"}
+              className="mr-2"
+            />
+            Classmate
           </div>
         </Link>
         {children}

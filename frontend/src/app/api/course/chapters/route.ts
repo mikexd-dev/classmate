@@ -179,6 +179,7 @@ export async function POST(req: Request, res: Response) {
         name: title,
         image: course_image,
         courseTokenId: lastcourse ? lastcourse?.courseTokenId! + 1 : 0,
+        createdBy: session?.user.id,
       },
     });
 
