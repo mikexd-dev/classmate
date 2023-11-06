@@ -19,6 +19,34 @@ type Props = {
   };
 };
 
+// async function generateFunFact(
+//   chapterName: string,
+//   unitName: string,
+//   chatId: number
+// ) {
+//   const res = await fetch("/api/chat", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       messages: [
+//         {
+//           role: "user",
+//           content: `Tell me a fun fact about ${chapterName} in the context of ${unitName} in  a way that grabs a student's attention.`,
+//         },
+//       ],
+//       chatId,
+//       userInitiated: false,
+//     }),
+//   });
+
+//   if (!res.ok) {
+//     // This will activate the closest `error.js` Error Boundary
+//     throw new Error("Failed to fetch data");
+//   }
+// }
+
 const CoursePage = async ({ params: { slug } }: Props) => {
   const session = await getAuthSession();
   const [courseId, unitIndexParam, chapterIndexParam] = slug;
@@ -59,13 +87,17 @@ const CoursePage = async ({ params: { slug } }: Props) => {
   const nextChapter = unit.chapters[chapterIndex + 1];
   const prevChapter = unit.chapters[chapterIndex - 1];
 
-  console.log(session, "coursepage");
-
   const chat = await prisma.chats.findFirst({
     where: {
       userId: session!.user?.id,
     },
   });
+
+  console.log("unit ==> ", unit.name);
+  console.log("chapter ==> ", chapter.name);
+
+  // const funFact = await generateFunFact(chapter.name, unit.name, chat!.id);
+  // console.log("funFact ==> ", funFact);
 
   return (
     <div className="py-10">

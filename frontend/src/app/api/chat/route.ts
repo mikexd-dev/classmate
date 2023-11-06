@@ -1,3 +1,4 @@
+// /api/chat
 import { Configuration, OpenAIApi } from "openai-edge";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
@@ -16,13 +17,16 @@ export async function POST(req: Request) {
   const prisma = new PrismaClient().$extends(withAccelerate());
 
   try {
-    const { messages, chatId } = await req.json();
+    const { messages, chatId, userInitiated } = await req.json();
+    console.log("messages ==> ", messages);
+    console.log("chatId ==> ", chatId);
+    console.log("userInitiated ==> ", userInitiated);
     const _chats = await prisma.chats.findMany({
       where: {
         id: chatId,
       },
     });
-    console.log("chat la ->>>>", _chats);
+
     if (_chats.length != 1) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1];
     const context = await getContext(lastMessage.content);
 
-    console.log("lastMessage -> ", lastMessage);
+    // console.log("lastMessage -> ", lastMessage);
     // console.log("context -> ", context);
 
     const prompt = {
@@ -89,37 +93,60 @@ export async function POST(req: Request) {
     // console.log("prompt -> ", prompt);
     // console.log("messages -> ", messages.slice(-5));
 
-    const response = await openai.createChatCompletion({
-      // model: "gpt-3.5-turbo-16k",
-      model: "gpt-4",
-      messages: [prompt, ...messages.slice(-5)],
-      temperature: 0.1,
-      stream: true,
-    });
+    // how do i call this endpoint without saving the user message into db?
+    // useful for when:
+    // 1. generating a funfact
+    // 2. responding to quiz answering
 
-    const stream = OpenAIStream(response, {
-      onStart: async () => {
-        // save user message into db
-        await prisma.messages.create({
-          data: {
-            chatId,
-            content: lastMessage.content,
-            role: "user",
-          },
-        });
-      },
-      onCompletion: async (completion) => {
-        // save ai message into db
-        await prisma.messages.create({
-          data: {
-            chatId,
-            content: completion,
-            role: "assistant",
-          },
-        });
-      },
-    });
-    return new StreamingTextResponse(stream);
+    if (userInitiated) {
+      const response = await openai.createChatCompletion({
+        // model: "gpt-3.5-turbo-16k",
+        model: "gpt-4",
+        messages: [prompt, ...messages.slice(-5)],
+        temperature: 0.1,
+        stream: true,
+      });
+
+      const stream = OpenAIStream(response, {
+        onStart: async () => {
+          // save user message into db
+          await prisma.messages.create({
+            data: {
+              chatId,
+              content: lastMessage.content,
+              role: "user",
+            },
+          });
+        },
+        onCompletion: async (completion) => {
+          // save ai message into db
+          await prisma.messages.create({
+            data: {
+              chatId,
+              content: completion,
+              role: "assistant",
+            },
+          });
+        },
+      });
+      return new StreamingTextResponse(stream);
+    } else {
+      const response = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages, // only one message
+        temperature: 0.9,
+      });
+
+      // console.log("non streamed response -> ", response);
+      return new Response(response.body, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "text/event-stream;charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          "X-Accel-Buffering": "no",
+        },
+      });
+    }
   } catch (error) {
     console.error(error);
   }
