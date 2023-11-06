@@ -24,35 +24,31 @@ export async function POST(req: Request) {
       onboardingInfo,
       prompt: promptQuiz,
     } = await req.json();
+
     const _chats = await prisma.chats.findMany({
       where: {
         id: chatId,
       },
     });
-    console.log("chat la ->>>>", _chats);
+
     if (_chats.length != 1) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
 
+    // For injecting quiz and student's answer into chatbot
     // TODO: i created this to try the quiz prompt injection, through useComplete, they use prompt, but i think is not the right way to do it
     if (promptQuiz) {
       const prompt = {
         role: "system",
         content: `
-        Student Onboarding Information:
+        Student Information:
           ${onboardingInfo}
-
-        Context on Singapore's lower secondary school science syllabus:
-
-        You are a friendly conversational AI learning companion. You specialize in Singapore's lower secondary school science education for students in secondary 1 and 2 (aged 13 to 14 years old).
+          
+        You are a friendly AI learning companion. You specialize in Singapore's lower secondary school science education for students in secondary 1 and 2 (aged 13 to 14 years old).
 
         A student will be interacting with you to learn about Singapore's Lower Secondary School Science.
 
-        Do not say "I'm sorry, but it seems there's a misunderstanding. The correct answer isn't provided." Always start with "Excellet question!" and address the student by name provided in the Student Onboarding Information.
-
-        Do not question whether the answer given is correct or wrong. Do not include this sentence "It seems there's a bit of confusion here." If you are unsure why the answer is correct, do not say "I'm not sure why it was marked as incorrect. Perhaps there was a mistake in the question or the answer key." 
-
-        Using the Student Onboarding Information and the Context on Singapore's lower secondary school science syllabus provided above and the quiz question, option and correct answer, you're to perform the following tasks:
+        You're to perform the following tasks:
         1. Adopt a socratic dialogue learning method.
         2. Use Theory of Mind, a concept in psychology, to understand the student's questions or responses, and thereafter: 
           a. Question their current assumptions
@@ -61,10 +57,18 @@ export async function POST(req: Request) {
         3. Use simple-to-understand explanations, examples and analogies to help students understand whatever they want to learn about.
         4. Always be encouraging and supportive. Offer constructive feedback on how the student can do better.
         5. Help the student learn as best as you can.
-        6. When a student says he/she wants to learn something, provide a breakdown/outline and have them response before you provide any explanations.
+        6. When a student says he/she wants to learn something, provide a breakdown/outline and have them respond before you provide any explanations.
         7. Ensure that the content and explanations you provide are for a secondary 1 or 2 student, aged 13 to 14 years old. Having too advanced content or explanations will confuse the student.
         8. Do not answer questions that are not related to the context on Singapore's lower secondary school science syllabus.
-        9. When given a question and student's answer and the correct answer, provide an explanation on why the student's answer is wrong and why the correct answer is correct. Do not question the correct answer or mention there is a misunderstanding. Comfort the student if their answer is wrong and encourage the student if their answer is correct.
+        9. You will be provided a quiz question and the student's answer. Based on the quiz question and the student's answer perform the following steps based on 2 different scenarios:
+          Scenario 1: The student's answer is correct
+            a. Praise the student for getting the correct answer
+            b. Ask if the student needs more explanation, if yes, provide a concise explanation
+          Scenario 2: The student's answer is wrong
+            a. Encourage the student and tell him/her that it's okay to get the wrong answer
+            b. Prompt the student to explain why he/she chose that answer
+            c. Only after the student replies why he/she chose that answer, analyze his/her explanation and reveal the correct answer, clarifying any misconceptions and explaining why the correct answer is correct for the question. Do all of these in a concise way.
+            d. Ask if the student needs more explanation, if yes, provide a concise explanation
       `,
       };
 
@@ -73,13 +77,9 @@ export async function POST(req: Request) {
       const userMessage: any = {
         role: "user",
         content: `
-        Given this question: ${quiz.question}, 
-        User has selected the following option: ${quiz.answer}. The user is ${
-          quiz.answer === quiz.correct_answer ? "correct" : "wrong"
-        }
-        
-        This is the correct answer: ${quiz.correct_answer}  
-        Explain to the user why this is the correct answer and why was the user's option wrong and ask if the user needs more explanation.
+        Question: ${quiz.question}, 
+        My answer: ${quiz.selectedAnswer}. 
+        The answer is ${quiz.isCorrect ? "correct" : "wrong"}
       `,
       };
 
@@ -87,20 +87,20 @@ export async function POST(req: Request) {
         // model: "gpt-3.5-turbo-16k",
         model: "gpt-4",
         messages: [prompt, userMessage],
-        temperature: 0.1,
+        temperature: 0.8, // more creative to be more "human-like"
         stream: true,
       });
 
       const stream = OpenAIStream(response, {
         onStart: async () => {
-          // save user message into db
-          await prisma.messages.create({
-            data: {
-              chatId,
-              content: quiz.question,
-              role: "user",
-            },
-          });
+          // decided to not save user message into db coz looks weird
+          // await prisma.messages.create({
+          //   data: {
+          //     chatId,
+          //     content: quiz.question,
+          //     role: "user",
+          //   },
+          // });
         },
         onCompletion: async (completion) => {
           // save ai message into db
@@ -115,37 +115,40 @@ export async function POST(req: Request) {
       });
       return new StreamingTextResponse(stream);
     } else {
+      // For normal user input to chatbot
       const lastMessage = messages[messages.length - 1];
       const context = await getContext(lastMessage.content);
-
-      console.log("lastMessage -> ", lastMessage);
-      // console.log("context -> ", context);
 
       const prompt = {
         role: "system",
         content: `
-        Student Onboarding Information:
+        Student Information:
           ${onboardingInfo}
 
         Context on Singapore's lower secondary school science syllabus:
           ${context}
 
-        You are a friendly conversational AI learning companion. You specialize in Singapore's lower secondary school science education for students in secondary 1 and 2 (aged 13 to 14 years old).
+        You are a friendly conversational AI learning companion. You specialize in assisting students aged 13 to 14 years old with Singapore's Lower Secondary School Science. Your dialogues should foster a curious and thoughtful mindset while remaining within the educational scope.
 
         A student will be interacting with you to learn about Singapore's Lower Secondary School Science.
 
         Using only the Student Onboarding Information and the Context on Singapore's lower secondary school science syllabus provided above, you're to perform the following tasks:
-        1. Adopt a socratic dialogue learning method.
-        2. Use Theory of Mind, a concept in psychology, to understand the student's questions or responses, and thereafter: 
-          a. Question their current assumptions
-          b. Encourage critical-thinking and curiosity
-          c. If the student's question is unclear or ambiguous, ask for more details to confirm your understanding before answering
-        3. Use simple-to-understand explanations, examples and analogies to help students understand whatever they want to learn about.
-        4. Always be encouraging and supportive. Offer constructive feedback on how the student can do better.
-        5. Help the student learn as best as you can.
-        6. When a student says he/she wants to learn something, provide a breakdown/outline and have them response before you provide any explanations.
-        7. Ensure that the content and explanations you provide are for a secondary 1 or 2 student, aged 13 to 14 years old. Having too advanced content or explanations will confuse the student.
-        8. Do not answer questions that are not related to the context on Singapore's lower secondary school science syllabus.
+        1. Engage in Socratic dialogue to deepen the student's understanding.
+        2. Apply Theory of Mind to assess and guide the student's learning journey:
+          a. Promptly question their assumptions to inspire reflection
+          b. Propel critical thinking and inquisitiveness
+          c. Clarify unclear or vague questions by asking for more details
+        3. Explain concepts using age-appropriate language, relatable examples, and analogies
+        4. Provide constant encouragement, fostering a positive learning environment with constructive feedback
+        5. Facilitate a adaptive and personalized learning experience
+        6. When a student says he/she wants to learn something, provide a breakdown/outline using Singapore's lower secondary school science syllabus and have them respond before you provide any explanations
+        7. Tailor content complexity to suit the understanding levels of Secondary 1 and 2 students
+        8. Maintain relevance by ensuring all discussions are pertinent to the Singapore lower secondary school science syllabus
+
+        Guidelines for Interactions:
+        - If discussions veer off-topic, gently steer back to the relevant science concepts
+        - Avoid jargon and high-level terminology not covered in the secondary science syllabus
+        - Use metaphors and analogies that are familiar to the everyday experiences of a young teenager
       `,
       };
 
@@ -157,10 +160,6 @@ export async function POST(req: Request) {
        * 3. Selective Inclusion: If your application has a way of determining which messages are more important or relevant to the current context, you could filter the messages array to only include these messages.
        *
        **/
-
-      // console.log("prompt -> ", prompt);
-      // console.log("messages -> ", messages.slice(-5));
-
       const response = await openai.createChatCompletion({
         // model: "gpt-3.5-turbo-16k",
         model: "gpt-4",
