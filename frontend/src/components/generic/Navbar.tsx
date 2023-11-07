@@ -13,7 +13,7 @@ import { profile } from "console";
 import Image from "next/image";
 type Props = {};
 
-const Navbar = ({ children, newToken }: any) => {
+const Navbar = ({ children, token }: any) => {
   // const [open, setOpen] = React.useState(false);
   let profileTokenid: any = null;
   const { data: session } = useSession();

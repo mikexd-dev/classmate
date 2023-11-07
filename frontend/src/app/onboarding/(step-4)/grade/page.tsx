@@ -24,7 +24,7 @@ export default function Page(props: Props) {
       body: JSON.stringify({ grade }),
     });
     const data = await res.json();
-    console.log(data);
+
     setIsLoading(false);
     if (data.data?.grade === grade) {
       router.push("/onboarding/topics");

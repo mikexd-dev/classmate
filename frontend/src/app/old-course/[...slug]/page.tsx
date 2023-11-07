@@ -58,8 +58,6 @@ const CoursePage = async ({ params: { slug } }: Props) => {
   const nextChapter = unit.chapters[chapterIndex + 1];
   const prevChapter = unit.chapters[chapterIndex - 1];
 
-  console.log(session, "coursepage");
-
   return (
     <div className="p-10">
       <Navbar />

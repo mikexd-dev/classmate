@@ -28,25 +28,10 @@ export default function Page(props: Props) {
       body: JSON.stringify({ topics, quiz: generatedQuiz }),
     });
     const data = await res.json();
-    // const res1 = await fetch("/api/users/quiz", {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ quiz: generatedQuiz }),
-    // });
-    // const data1 = await res1.json();
-    console.log(data.data, "updated");
+
     localStorage.setItem("quiz", JSON.stringify(generatedQuiz));
     router.push("/onboarding/quiz");
     setIsLoading(false);
-
-    // if (
-    //   JSON.stringify(data.data?.topics) === JSON.stringify(topics) &&
-    //   data1.data?.onBoardingQuiz?.length > 0
-    // ) {
-    //   router.push("/onboarding/quiz");
-    // }
   };
 
   async function generateQuiz() {
@@ -57,7 +42,7 @@ export default function Page(props: Props) {
       },
     });
     const data = await res.json();
-    console.log(data, quiz, "quiz");
+
     setQuiz(data?.data);
     return data?.data;
   }

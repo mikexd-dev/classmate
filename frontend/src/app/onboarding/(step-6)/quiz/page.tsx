@@ -49,50 +49,19 @@ export default function Page(props: Props) {
   });
 
   useEffect(() => {
-    // async function fetchQuiz() {
-    //   const res = await fetch("/api/users/quiz", {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-    //   const data = await res.json();
-    //   if (quiz.length === 0) setQuiz(data?.data);
-    //   setIsLoading(false);
-    // }
-    // fetchQuiz(undefined, {
-    //   onSuccess: (data) => {
-    //     console.log(data, "data quiz");
-    //     setQuiz(data);
-    //   },
-    //   onError: () => {
-    //     console.log("error");
-    //   },
-    // });
     const quizStored = localStorage.getItem("quiz");
     setQuiz(JSON.parse(quizStored!));
-    console.log(session, "session");
   }, [session]);
 
   const checkAnswer = () => {
     const currentOption: any = quiz[quizStep];
     if (option === currentOption.answer) {
-      // toast({
-      //   title: "Correct!",
-      //   description: "You have answered correctly!",
-      // });
       if (correctAnswer.includes(currentOption.question)) {
         setCorrectAnswer([...correctAnswer]);
       } else {
         setCorrectAnswer([...correctAnswer, currentOption.question]);
       }
     } else {
-      // toast({
-      //   title: "Incorrect!",
-      //   variant: "destructive",
-      //   description:
-      //     "You have answered incorrectly! " + currentOption.reasoning,
-      // });
       if (wrongAnswer.includes(currentOption.question)) {
         setWrongAnswer([...wrongAnswer]);
       } else {
@@ -144,7 +113,7 @@ export default function Page(props: Props) {
         });
         router.push(`/create/${course.id}`);
         setCourse(course);
-        console.log(course, "course_id");
+
         setQuizStep(quizStep + 1);
         setProgress(progress + 20);
         setGeneratingCourse(true);

@@ -20,7 +20,6 @@ export async function strict_output(
   num_tries: number = 3,
   verbose: boolean = false
 ) {
-  // console.log(user_prompt, "input");
   // if the user input is in a list, we also process the output as a list of json
   const list_input: boolean = Array.isArray(user_prompt);
   // if the output format contains dynamic elements of < or >, then add to the prompt to handle dynamic elements
@@ -158,7 +157,6 @@ export async function normal_gpt(
   num_tries: number = 3,
   verbose: boolean = false
 ) {
-  // console.log(user_prompt, "input");
   // if the user input is in a list, we also process the output as a list of json
   const list_input: boolean = Array.isArray(user_prompt);
   // if the output format contains dynamic elements of < or >, then add to the prompt to handle dynamic elements

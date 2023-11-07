@@ -57,7 +57,6 @@ export function QuizForm({
   }, [options]);
 
   function onChange(input: any) {
-    console.log(input.target.value);
     setUserAnswer(input.target.value);
     setOption(input.target.value);
   }

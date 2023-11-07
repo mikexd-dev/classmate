@@ -28,7 +28,6 @@ export function GradeForm({ setGrade }: any) {
   });
 
   function onChange(input: any) {
-    console.log(input.target.value);
     setGrade(input.target.value);
   }
 

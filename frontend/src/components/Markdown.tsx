@@ -41,39 +41,6 @@ const MarkdownMemo = ({ markdown }: any) => {
           <a href={href}>{text}</a>
         </node.tagName>
       );
-      // console.log(children, typeof children);
-
-      // if (children === undefined) {
-      //   console.log("returnm empty block");
-      //   return <></>;
-      // }
-      // const a = node.children.find(
-      //   (e: any) => e.tagName && e.tagName.toUpperCase() === "a".toUpperCase()
-      // );
-
-      // if (!a) {
-      //   return (
-      //     <node.tagName {...props} {...{ className }}>
-      //       {children}
-      //     </node.tagName>
-      //   );
-      // }
-
-      // const hrefId =
-      //   a.properties["href"][0] === "#"
-      //     ? a.properties["href"].slice(1)
-      //     : a.properties["href"];
-      // const { id } = props;
-
-      // return (
-      //   <node.tagName
-      //     {...props}
-      //     {...{ className }}
-      //     id={`${id || ""} ${hrefId || ""}`.trim()}
-      //   >
-      //     {children}
-      //   </node.tagName>
-      // );
     };
     const ComponentConstructor = () => (
       <Markdown

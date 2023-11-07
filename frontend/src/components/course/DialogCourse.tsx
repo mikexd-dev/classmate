@@ -77,7 +77,6 @@ export default function DialogCourse() {
     // });
     createChapters(undefined, {
       onSuccess: ({ course }) => {
-        console.log(course, "here");
         toast({
           title: "Success",
           description: "Course created",

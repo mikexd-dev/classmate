@@ -20,7 +20,6 @@ const QuizCards = ({ chapter }: Props) => {
     Record<string, boolean | null>
   >({});
   const { height } = useWindowSize();
-  console.log(height, "height");
 
   const checkAnswer = React.useCallback(() => {
     const newQuestionState = { ...questionState };

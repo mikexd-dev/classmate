@@ -17,6 +17,7 @@ import { debounce } from "lodash";
 import { uuidV4 } from "ethers";
 import { state } from "./MainQuiz";
 import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu";
+import { AnimatePresence, motion } from "framer-motion";
 
 const profiles = [
   {
@@ -145,70 +146,86 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
   }, [messages, session?.user]);
 
   return (
-    <div className="rounded-3xl bg-stone-200 min-w-[340px] h-full shadow-md pb-10 mt-5">
-      <div className="w-full h-full rounded-t-3xl flex flex-row p-5 pt-3">
-        <Player
-          autoplay
-          loop
-          src={profile.image}
-          style={{
-            height: "64px",
-            width: "64px",
-            // borderRadius: "24px",
-            // border: "3px solid black",
-          }}
-          className="hover:bg-sky-700"
-        />
-        <div className="flex flex-col p-5 ">
-          <div className="text-black text-sm font-semibold">{profile.name}</div>
-          <div className="text-black text-sm font-normal">
-            {profile.description}
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: 1,
+          transition: {
+            duration: 2,
+            ease: [0.5, 0.71, 1, 1.5],
+            delayChildren: 0.5,
+            staggerChildren: 0.5,
+          },
+        }}
+        className="rounded-3xl bg-stone-200 min-w-[340px] h-full shadow-md pb-10 mt-5"
+      >
+        <div className="w-full h-full rounded-t-3xl flex flex-row p-5 pt-3">
+          <Player
+            autoplay
+            loop
+            src={profile.image}
+            style={{
+              height: "64px",
+              width: "64px",
+              // borderRadius: "24px",
+              // border: "3px solid black",
+            }}
+            className="hover:bg-sky-700"
+          />
+          <div className="flex flex-col p-5 ">
+            <div className="text-black text-sm font-semibold">
+              {profile.name}
+            </div>
+            <div className="text-black text-sm font-normal">
+              {profile.description}
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-start justify-between"
-        id="message-container"
-      >
-        <MessageList messages={messages} isLoading={isLoading} />
-
-        <form
-          onSubmit={handleSubmit}
-          className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 py-2 bg-white"
+        <div
+          className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-start justify-between"
+          id="message-container"
         >
-          {(isLoadingQuizExplanation || isMessageLoading) && (
-            <div className="flex flex-start w-full">
-              <Player
-                autoplay
-                loop
-                src={
-                  "https://lottie.host/3238e0e1-dd8d-43f8-8727-c041f22d2d71/oawumDLEXG.json"
-                }
-                style={{
-                  height: "30px",
-                  width: "30px",
-                  // borderRadius: "24px",
-                  // border: "3px solid black",
-                }}
-                className="relative bottom-0"
-              />
-            </div>
-          )}
+          <MessageList messages={messages} isLoading={isLoading} />
 
-          <div className="flex">
-            <Input
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Ask any question..."
-              className="w-full"
-            />
-            <Button className="bg-purple-600 ml-2">
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          <form
+            onSubmit={handleSubmit}
+            className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 py-2 bg-white"
+          >
+            {(isLoadingQuizExplanation || isMessageLoading) && (
+              <div className="flex flex-start w-full">
+                <Player
+                  autoplay
+                  loop
+                  src={
+                    "https://lottie.host/3238e0e1-dd8d-43f8-8727-c041f22d2d71/oawumDLEXG.json"
+                  }
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    // borderRadius: "24px",
+                    // border: "3px solid black",
+                  }}
+                  className="relative bottom-0"
+                />
+              </div>
+            )}
+
+            <div className="flex">
+              <Input
+                value={input}
+                onChange={handleInputChange}
+                placeholder="Ask any question..."
+                className="w-full"
+              />
+              <Button className="bg-purple-600 ml-2">
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function PUT(request: Request) {
   // update user address
   const session = await getAuthSession();
-  console.log(session, "session wtf");
+
   if (!session?.user) {
     return new NextResponse("unauthorised", { status: 401 });
   }

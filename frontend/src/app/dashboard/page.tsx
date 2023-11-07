@@ -15,7 +15,7 @@ type Props = {
 
 const DashboardPage = async (props: Props) => {
   const session = await getAuthSession();
-  console.log(session, "session");
+
   if (!session) redirect("/");
   const courses = await prisma.course.findMany({
     include: {
@@ -28,8 +28,6 @@ const DashboardPage = async (props: Props) => {
       createdAt: "desc",
     },
   });
-
-  console.log(courses, "course");
 
   // find all userprogress of a user
   const userProgress = await prisma.userProgress.findMany({

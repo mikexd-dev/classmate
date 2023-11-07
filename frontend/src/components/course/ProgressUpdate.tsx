@@ -25,7 +25,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import CoinSVG from "../../../public/coin.svg";
-import { useSession } from "next-auth/react";
+import { getCsrfToken, useSession } from "next-auth/react";
 import { Player } from "@lottiefiles/react-lottie-player";
 // import courseContractAbi as abi from "../../modules/contract/CourseABI.json";
 type Props = {};
@@ -37,6 +37,11 @@ const ProgressUpdate = ({
   courseId,
   courseTokenId,
   profileTokenId,
+  completed,
+  setCompleted,
+  progress,
+  setProgress,
+  setToken,
 }: any) => {
   const {
     isConnecting,
@@ -52,13 +57,13 @@ const ProgressUpdate = ({
 
   const [isMinting, setIsMinting] = useState(false);
   const [isMinted, setIsMinted] = useState(false);
-  const [completed, setCompleted] = useState(false);
+  // const [completed, setCompleted] = useState(false);
+  // const [progress, setProgress] = useState(0);
   const [throwConfetti, setThrowConfetti] = useState(false);
   const { toast } = useToast();
   const { data: session, status } = useSession();
 
   courseNFTContract?.on("NFTMinted", (from, to, amount, event) => {
-    console.log(amount, "event");
     // setIsMinting(false);
     setIsMinted(true);
     toast({
@@ -66,12 +71,11 @@ const ProgressUpdate = ({
       description: "Course NFT Minted",
     });
 
-    setProgress(progress);
+    setProgress(100);
     setCompleted(true);
     setThrowConfetti(true);
   });
 
-  const [progress, setProgress] = useState(0);
   const router = useRouter();
 
   function getTotalChapters(course: any): number {
@@ -93,15 +97,20 @@ const ProgressUpdate = ({
   }
 
   async function progressUpdate() {
-    console.log(unit, chapter, "mike");
     const currentChapters = getCurrentChapters(course, unit, chapter);
-    // const totalChapters = getTotalChapters(course);
-    // console.log(currentChapters, totalChapters, "called");
+
     const progress = (currentChapters / 12) * 100;
 
     const response = await axios.put("/api/users/token", {
       token: session?.user?.token! + 50,
     });
+
+    const data = await axios.post(`/api/auth/session`, {
+      csrfToken: await getCsrfToken(),
+      data: response.data.data,
+    });
+
+    setToken(session?.user?.token! + 50);
 
     // if progress is 100, then create NFT
     if (progress === 100) {
@@ -109,13 +118,12 @@ const ProgressUpdate = ({
       setTimeout(() => {
         console.log(isConnected, "isConnected1");
       }, 1000);
-      console.log(isConnected, "isConnected");
+
       const { profileContract, courseContract }: any = await connect();
       const profile = await profileContract!.getIndividualProfile(
         profileTokenId
       );
       const tbaAddress = { ...profile }[2];
-      console.log(tbaAddress, "tbaAddress");
       const tx = await courseContract!.mintCourse(tbaAddress, courseTokenId);
 
       const response = await axios.post("/api/progress", {
@@ -133,7 +141,6 @@ const ProgressUpdate = ({
       setProgress(progress);
       setCompleted(true);
       setThrowConfetti(true);
-      console.log(response.data, "updated");
     }
   }
 
@@ -145,7 +152,6 @@ const ProgressUpdate = ({
       // const totalChapters = getTotalChapters(course);
 
       const progress: any = (currentChapters / 12) * 100;
-      console.log(progress, response, "progress");
       setProgress(response?.data?.data?.progress || 0);
       if (response?.data?.data?.progress >= progress.toFixed(0)) {
         setCompleted(true);

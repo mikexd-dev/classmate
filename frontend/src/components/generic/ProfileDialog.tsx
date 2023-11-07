@@ -52,7 +52,6 @@ const ProfileDialog = ({ open, setOpen, profileTokenId }: Props) => {
   const [isMinting, setIsMinting] = React.useState(false);
 
   aiProfileContract?.on("NFTMinted", (from, to, amount, event) => {
-    console.log(event, "event");
     setIsMinting(false);
     setOnboardingProgress(50);
     setOnboardingStep(1);
@@ -91,7 +90,6 @@ const ProfileDialog = ({ open, setOpen, profileTokenId }: Props) => {
       },
     });
   };
-  console.log(profileTokenId, "profileTokenId");
 
   return (
     <div className="w-[600px]">

@@ -39,7 +39,6 @@ export async function uploadJson(jsonData: nftCourse, tokenId: string) {
 
   try {
     const response = await s3Client.send(command);
-    console.log("Success", response);
     return response;
   } catch (error) {
     console.error("Error", error);

@@ -14,14 +14,13 @@ export async function POST(request: Request) {
   const requestBody = await request.json();
   const { completed, courseId, progress } = requestBody;
   try {
-    console.log(session, courseId, progress, completed);
     const userProgress = await prisma.userProgress.findFirst({
       where: {
         userId: session!.user?.id,
         courseId,
       },
     });
-    console.log(userProgress, "userProgress");
+
     if (!userProgress) {
       const data = await prisma.userProgress.create({
         data: {
@@ -49,7 +48,6 @@ export async function POST(request: Request) {
       });
     }
   } catch (err) {
-    console.log(err, "here");
     const data = await prisma.userProgress.create({
       data: {
         userId: session!.user?.id,

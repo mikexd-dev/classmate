@@ -6,7 +6,7 @@ import { getAuthSession } from "@/lib/auth";
 export async function POST(request: Request) {
   // update user address
   const session = await getAuthSession();
-  console.log(session, "session wtf");
+
   if (!session?.user) {
     return new NextResponse("unauthorised", { status: 401 });
   }
@@ -20,8 +20,6 @@ export async function POST(request: Request) {
   const chat = await prisma.chats.findFirst({
     where: { userId: session?.user?.id },
   });
-
-  console.log();
 
   // if no chat, create chat - required, otherwise chat will be created twice
   if (!chat) {
@@ -49,7 +47,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   // update user address
   const session = await getAuthSession();
-  console.log(session, "session wtf");
+
   if (!session?.user) {
     return new NextResponse("unauthorised", { status: 401 });
   }

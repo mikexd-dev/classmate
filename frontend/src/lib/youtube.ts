@@ -10,11 +10,9 @@ export async function searchYoutube(searchQuery: string) {
     `https://www.googleapis.com/youtube/v3/search?key=${process.env.YOUTUBE_API_KEY}&q=${searchQuery}&videoDuration=medium&videoEmbeddable=true&type=video&maxResults=1&relevanceLanguage=en`
   );
   if (!data) {
-    console.log("no data");
     return null;
   }
   if (data.items[0] == undefined) {
-    console.log("youtube fail");
     return null;
   }
   return data.items[0].id.videoId;
@@ -26,7 +24,6 @@ export async function getTranscript(videoId: string) {
       lang: "en",
       country: "EN",
     });
-    // console.log(transcript_arr, "transcript_arr");
     let transcript = "";
     for (let t of transcript_arr) {
       transcript += t.text + " ";

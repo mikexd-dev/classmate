@@ -54,10 +54,7 @@ const ConfirmChapters = ({ course }: Props) => {
   }, []);
 
   useEffect(() => {
-    console.log(totalChaptersCount, completedChapters.size, chapterCount);
     if (completedChapters.size === 9 && failedChapters.size === 0) {
-      console.log(completedChapters, "completed");
-      // setStartCourse(true);
       router.push(`/course/${course.id}/0/0`);
     }
   }, [
@@ -69,7 +66,6 @@ const ConfirmChapters = ({ course }: Props) => {
     router,
     course.id,
   ]);
-  // console.log(completedChapters, "completed");
 
   return (
     <div className="w-full ">

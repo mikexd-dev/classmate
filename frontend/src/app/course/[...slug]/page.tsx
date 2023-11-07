@@ -26,8 +26,7 @@ type Props = {
 
 const CoursePage = ({ params: { slug } }: Props) => {
   const { data: session } = useSession();
-  console.log(session, "session");
-  if (!session) redirect("/");
+  // if (!session?.user) redirect("/");
   const [course, setCourse] = useState<any>(null);
   const [unitIndex, setUnitIndex] = useState(0);
   const [chapterIndex, setChapterIndex] = useState(0);
@@ -39,12 +38,17 @@ const CoursePage = ({ params: { slug } }: Props) => {
   const [quizStep, setQuizStep] = useState(0);
   const [wrongAnswer, setWrongAnswer] = useState<any[]>([]);
   const [showAnswer, setAnswer] = useState(false);
+
+  const [progress, setProgress] = useState(0);
+  const [completed, setCompleted] = useState(false);
+  const [token, setToken] = useState<any>();
+
   useEffect(() => {
     const fetchCourse = async () => {
       const response = await axios.get(`/api/course/chapters?id=${courseId}`);
       const courseData = response.data;
       setCourse(response.data);
-      console.log(response, "course");
+
       // if (!course) {
       //   return redirect("/dashboard");
       // }
@@ -74,12 +78,12 @@ const CoursePage = ({ params: { slug } }: Props) => {
     };
     fetchCourse();
     fetchChat();
-  }, []);
+  }, [chapterIndexParam, courseId, unitIndexParam]);
 
   return (
     <div className="py-10">
       {course && (
-        <Navbar>
+        <Navbar token={token}>
           <ProgressUpdate
             unit={unitIndex}
             chapter={chapterIndex}
@@ -87,6 +91,11 @@ const CoursePage = ({ params: { slug } }: Props) => {
             courseId={courseId}
             courseTokenId={course.courseTokenId}
             profileTokenId={session?.user?.tokenProfileId!}
+            progress={progress}
+            setProgress={setProgress}
+            completed={completed}
+            setCompleted={setCompleted}
+            setToken={setToken}
           />
         </Navbar>
       )}
@@ -100,6 +109,8 @@ const CoursePage = ({ params: { slug } }: Props) => {
                 chapterIndex === 3 ? chapterIndex.toString() : chapter.id
               }
               currentUnit={unitIndex}
+              progress={progress}
+              isCompleted={completed}
             />
           </div>
           <div className="flex-3">
