@@ -54,7 +54,7 @@ const Navbar = ({ children, newToken }: any) => {
                 >
                   Credentials
                 </Button> */}
-                <div className="flex flex-row items-center rounded-full border border-yellow-500 bg-yellow-100 text-yellow-800 text-xs font-light font-oi p-2 w-20">
+                <div className="flex flex-row items-center justify-center rounded-full border border-yellow-500 bg-yellow-100 text-yellow-800 text-xs font-light font-oi p-2 w-20">
                   {session?.user?.token}
                   <Image
                     src="/coin.svg"

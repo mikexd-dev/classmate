@@ -140,14 +140,14 @@ const Page = (props: Props) => {
                 Best viewed on desktop*
               </div> */}
               <motion.div
-                className="text-center font-light text-5xl flex flex-row font-oi w-[50%]"
+                className="text-center font-light text-5xl flex flex-row font-oi w-[70%]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
                 Your Personal Learning Companion
               </motion.div>
               <motion.div
-                className="text-center font-normal text-2xl pb-5 w-[30%] p-6"
+                className="text-center font-normal text-2xl pb-5 w-[50%] p-6"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
@@ -157,7 +157,7 @@ const Page = (props: Props) => {
 
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <Button
-                  className="bg-purple-500 p-8 px-10 rounded-full text-xl mr-5 mb-20"
+                  className="bg-purple-500 p-8 px-10 rounded-full text-xl mr-5 mb-20 mt-5"
                   onClick={() =>
                     signIn("google", { callbackUrl: "/onboarding" })
                   }

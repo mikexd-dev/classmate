@@ -7,13 +7,24 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib";
 // import "../styles/dist.css";
 import "./globals.css";
+import localFont from "@next/font/local";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const oi = Oi({
-  subsets: ["latin"],
-  weight: ["400"],
+const oi = localFont({
+  src: [
+    {
+      path: "../../public/ChunkFive-Regular.ttf",
+      weight: "500",
+    },
+  ],
   variable: "--font-oi",
 });
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+// const oi = Oi({
+//   subsets: ["latin"],
+//   weight: ["400"],
+//   variable: "--font-oi",
+// });
 
 export const metadata: Metadata = {
   title: "Classmate",
