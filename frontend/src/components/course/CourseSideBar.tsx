@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { Chapter, Course, Unit } from "@prisma/client";
 import Link from "next/link";
