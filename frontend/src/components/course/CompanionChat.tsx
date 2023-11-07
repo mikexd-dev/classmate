@@ -183,7 +183,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
           </div>
         </div>
         <div
-          className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-start justify-between"
+          className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
           id="message-container"
         >
           <MessageList messages={messages} isLoading={isLoading} />
