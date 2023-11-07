@@ -48,7 +48,7 @@ const CreateChapters = async ({ params: { courseId } }: Props) => {
             Course Outline...
           </div>
         </div>
-        <div className="rounded-3xl bg-white absolute top-[27%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-start justify-between">
+        <div className="rounded-3xl bg-white absolute top-[26%] w-[652px] h-[575px] shadow-xl p-8 flex flex-col items-start justify-between">
           <div>
             <div className="font-semibold text-3xl">
               Generating your learning plan

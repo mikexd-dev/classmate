@@ -7,6 +7,7 @@ import { CourseCard } from "@/components/course/CourseCard";
 import { Separator } from "@/components/ui/separator";
 import { getAuthSession } from "@/lib/auth";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: any;
@@ -14,7 +15,8 @@ type Props = {
 
 const DashboardPage = async (props: Props) => {
   const session = await getAuthSession();
-
+  console.log(session, "session");
+  if (!session) redirect("/");
   const courses = await prisma.course.findMany({
     include: {
       units: {

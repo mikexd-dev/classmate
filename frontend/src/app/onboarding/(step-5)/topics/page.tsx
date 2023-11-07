@@ -108,7 +108,7 @@ export default function Page(props: Props) {
               <Button
                 className="p-8 px-10 rounded-full text-xl mr-5"
                 onClick={() => updateTopics()}
-                disabled={topics.length === 0 || isLoading}
+                disabled={topics.length !== 3 || isLoading}
               >
                 {isLoading ? "Generating Quiz..." : "Next"}
                 {!isLoading && (

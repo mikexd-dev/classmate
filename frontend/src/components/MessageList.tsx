@@ -21,14 +21,14 @@ const MessageList = ({ messages, isLoading }: Props) => {
   if (!messages) return <></>;
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 pl-6">
       {messages.map((message) => {
         return (
           <div
             key={message.id}
             className={cn("flex", {
               "justify-end pl-10": message.role === "user",
-              "justify-start ml-4": message.role === "assistant",
+              "justify-start": message.role === "assistant",
             })}
           >
             <div

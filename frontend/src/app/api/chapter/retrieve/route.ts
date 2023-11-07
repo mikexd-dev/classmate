@@ -21,7 +21,6 @@ export async function POST(req: Request, res: Response) {
   try {
     const body = await req.json();
     const { chapterId, unitId } = bodyParser.parse(body);
-    console.log(unitId, "unitId");
     const chapter = await prisma.chapter.findUnique({
       where: {
         id: chapterId,
@@ -49,8 +48,6 @@ export async function POST(req: Request, res: Response) {
         transcript,
       { summary: "summary of the transcript" }
     );
-
-    console.log(summary, "summary");
 
     // generate questions
     const questions = await getQuestionsFromTranscript(

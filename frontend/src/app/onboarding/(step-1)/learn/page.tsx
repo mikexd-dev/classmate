@@ -6,10 +6,11 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Player, Controls } from "@lottiefiles/react-lottie-player";
 import { AnimatePresence, motion } from "framer-motion";
-
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 type Props = {};
 
-export default function page(props: Props) {
+export default function Page(props: Props) {
   return (
     <div
       className="min-h-screen flex justify-center items-center  "

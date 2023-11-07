@@ -146,7 +146,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
 
   return (
     <div className="rounded-3xl bg-stone-200 min-w-[340px] h-full shadow-md pb-10 mt-5">
-      <div className="w-full h-full rounded-t-3xl flex flex-row p-5 pt-2">
+      <div className="w-full h-full rounded-t-3xl flex flex-row p-5 pt-3">
         <Player
           autoplay
           loop
@@ -167,7 +167,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
         </div>
       </div>
       <div
-        className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
+        className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-start justify-between"
         id="message-container"
       >
         <MessageList messages={messages} isLoading={isLoading} />

@@ -26,6 +26,8 @@ type Props = {
 
 const CoursePage = ({ params: { slug } }: Props) => {
   const { data: session } = useSession();
+  console.log(session, "session");
+  if (!session) redirect("/");
   const [course, setCourse] = useState<any>(null);
   const [unitIndex, setUnitIndex] = useState(0);
   const [chapterIndex, setChapterIndex] = useState(0);

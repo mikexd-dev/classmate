@@ -50,7 +50,6 @@ export async function POST(req: Request, res: Response) {
     const body = await req.json();
     const { title: basic_title, wrongAnswers } = body;
     const title = session?.user?.grade + " " + basic_title;
-    console.log(title, wrongAnswers, "title, wrongAnswers");
 
     type outputUnits = {
       title: string;
@@ -93,7 +92,6 @@ export async function POST(req: Request, res: Response) {
       }
     );
 
-    console.log(units, "units");
     // only take the first 3 units
     units = units.slice(0, 3);
 
@@ -118,11 +116,8 @@ export async function POST(req: Request, res: Response) {
       }
     );
 
-    console.log(output_units, "output_units");
-
     // only take the first 3 chapters of each unit
     output_units = output_units.map((unit) => {
-      console.log(unit, "why unit why");
       return {
         title: unit.title,
         chapters: unit.chapters.slice(0, 3),
@@ -172,8 +167,6 @@ export async function POST(req: Request, res: Response) {
       },
     });
 
-    console.log(lastcourse, "lastcourse");
-
     const course = await prisma.course.create({
       data: {
         name: title,
@@ -184,12 +177,10 @@ export async function POST(req: Request, res: Response) {
     });
 
     nftDescription.image = course_image;
-    console.log(nftDescription, "nftDescription");
     const result = await uploadJson(
       nftDescription,
       lastcourse ? (lastcourse?.courseTokenId! + 1).toString()! : "0"
     );
-    console.log(result, "result");
 
     for (const unit of output_units) {
       const title = unit.title;
@@ -209,17 +200,6 @@ export async function POST(req: Request, res: Response) {
         }),
       });
     }
-
-    // await prisma.user.update({
-    //   where: {
-    //     id: session.user.id,
-    //   },
-    //   data: {
-    //     credits: {
-    //       decrement: 1,
-    //     },
-    //   },
-    // });
 
     const courseDetail = await prisma.course.findUnique({
       where: {

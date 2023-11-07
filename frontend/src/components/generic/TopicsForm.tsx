@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const items = [
   {
@@ -58,7 +59,9 @@ const FormSchema = z.object({
   }),
 });
 
-export function TopicsForm({ setTopics, topics }: any) {
+export function TopicsForm({ setTopics, topics, fromDashboard = false }: any) {
+  const [options, setOptions] = useState(items);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -84,13 +87,17 @@ export function TopicsForm({ setTopics, topics }: any) {
             <FormItem>
               <div className="mb-4">
                 <FormLabel className="text-base">
-                  <div className="font-semibold text-3xl pb-5">
-                    Share with us the topics you wish to learn
-                  </div>
+                  {!fromDashboard && (
+                    <div className="font-semibold text-2xl pb-5">
+                      Share with us the topics you wish to learn
+                    </div>
+                  )}
                 </FormLabel>
-                <FormDescription>You can select more than one</FormDescription>
+                <FormDescription>
+                  You should select three topics
+                </FormDescription>
               </div>
-              {items.map((item) => (
+              {options.map((item) => (
                 <FormField
                   key={item.id}
                   control={form.control}
@@ -118,9 +125,15 @@ export function TopicsForm({ setTopics, topics }: any) {
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="font-semibold text-xl">
-                          {item.label}
-                        </FormLabel>
+                        {fromDashboard ? (
+                          <FormLabel className="font-semibold text-md">
+                            {item.label}
+                          </FormLabel>
+                        ) : (
+                          <FormLabel className="font-semibold text-xl">
+                            {item.label}
+                          </FormLabel>
+                        )}
                       </FormItem>
                     );
                   }}

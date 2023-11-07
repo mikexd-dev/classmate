@@ -51,6 +51,7 @@ const ProgressUpdate = ({
   } = useWalletAuth();
 
   const [isMinting, setIsMinting] = useState(false);
+  const [isMinted, setIsMinted] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [throwConfetti, setThrowConfetti] = useState(false);
   const { toast } = useToast();
@@ -59,11 +60,15 @@ const ProgressUpdate = ({
   courseNFTContract?.on("NFTMinted", (from, to, amount, event) => {
     console.log(amount, "event");
     // setIsMinting(false);
-    setCompleted(true);
+    setIsMinted(true);
     toast({
       title: "Success",
       description: "Course NFT Minted",
     });
+
+    setProgress(progress);
+    setCompleted(true);
+    setThrowConfetti(true);
   });
 
   const [progress, setProgress] = useState(0);
@@ -118,10 +123,6 @@ const ProgressUpdate = ({
         courseId,
         progress,
       });
-
-      setProgress(progress);
-      setCompleted(true);
-      setThrowConfetti(true);
     } else {
       const response = await axios.post("/api/progress", {
         completed: progress === 100 ? true : false,
@@ -164,17 +165,17 @@ const ProgressUpdate = ({
         <DialogContent onInteractOutside={(event) => event.preventDefault()}>
           <DialogHeader>
             <DialogTitle>
-              {completed
+              {isMinted
                 ? "Your Course NFT has been successfully minted!"
                 : "Minting your course NFT..."}
             </DialogTitle>
             <DialogDescription className="py-3">
-              {completed
+              {isMinted
                 ? "Congratulations on completing the course! Well done! You can now view your course NFT under your profile token bound account!"
                 : "You will be prompted to use your biometric to approve the minting of the course NFT into your profile."}
             </DialogDescription>
           </DialogHeader>
-          {completed ? (
+          {isMinted ? (
             <div>
               <Player
                 autoplay

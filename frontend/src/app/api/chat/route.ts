@@ -85,7 +85,7 @@ export async function POST(req: Request) {
 
       const response = await openai.createChatCompletion({
         // model: "gpt-3.5-turbo-16k",
-        model: "gpt-4-1106-preview",
+        model: "gpt-4",
         messages: [prompt, userMessage],
         temperature: 0.8, // more creative to be more "human-like"
         stream: true,
@@ -162,7 +162,7 @@ export async function POST(req: Request) {
        **/
       const response = await openai.createChatCompletion({
         // model: "gpt-3.5-turbo-16k",
-        model: "gpt-4-1106-preview",
+        model: "gpt-4",
         messages: [prompt, ...messages.slice(-10)],
         temperature: 0.1,
         stream: true,

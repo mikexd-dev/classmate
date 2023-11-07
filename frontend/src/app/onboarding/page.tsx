@@ -7,11 +7,13 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 type Props = {};
 
 export default function Page(props: Props) {
   const { data: session, status } = useSession();
+  if (session?.user?.address) redirect("/dashboard");
   return (
     <div
       className="min-h-screen flex justify-center items-center  "
