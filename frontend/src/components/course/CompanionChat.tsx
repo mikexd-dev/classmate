@@ -282,7 +282,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
             )}
           <form
             onSubmit={handleSubmit}
-            className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 py-2 bg-white"
+            className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 my-2 bg-white"
           >
             {(isLoadingQuizExplanation || isMessageLoading) && (
               <div className="flex flex-start w-full">
@@ -303,7 +303,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
               </div>
             )}
 
-            <div className="flex">
+            <div className="flex items-center">
               <Input
                 value={input || transcript}
                 onChange={handleInputChange}
@@ -311,8 +311,8 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
                 className="w-full"
               />
               <div>
-                <Button
-                  className={cn("bg-black rounded-full ml-2 p-1 px-3", {
+                <div
+                  className={cn("bg-black rounded-full ml-2 p-3", {
                     "bg-red-600 text-white": listening,
                     "bg-black text-white": !listening,
                   })}
@@ -323,7 +323,7 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
                   }
                 >
                   <Mic className="h-4 w-4" />
-                </Button>
+                </div>
               </div>
               <Button className="bg-purple-600 ml-2">
                 <Send className="h-4 w-4" />
