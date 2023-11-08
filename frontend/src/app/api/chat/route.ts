@@ -31,8 +31,6 @@ export async function POST(req: Request) {
       prompt: promptQuiz,
     } = await req.json();
 
-    console.log(messages, chatId, onboardingInfo, promptQuiz, "messages");
-
     const _chats = await prisma.chats.findMany({
       where: {
         id: chatId,
@@ -121,7 +119,7 @@ export async function POST(req: Request) {
           });
 
           // save message to voice
-          console.log(data, "message data", chatId);
+
           const response = await generateVoice(
             data.content,
             chatId,
@@ -149,7 +147,7 @@ export async function POST(req: Request) {
         role: "system",
         content: `
         Student Information:
-          ${onboardingInfo}
+          ${messages && onboardingInfo}
 
         Context on Singapore's lower secondary school science syllabus:
           ${context}
@@ -187,10 +185,20 @@ export async function POST(req: Request) {
        * 3. Selective Inclusion: If your application has a way of determining which messages are more important or relevant to the current context, you could filter the messages array to only include these messages.
        *
        **/
+
+      // strip away createdAt, id and userId from objects in onboardingInfo array
+      const voiceHistoryMessages =
+        !messages &&
+        onboardingInfo
+          .slice(-10)
+          .map(({ content, role }: any) => ({ content, role }));
+
       const response = await openai.createChatCompletion({
         // model: "gpt-3.5-turbo-16k",
         model: "gpt-4",
-        messages: messages ? [prompt, ...messages.slice(-10)] : [prompt],
+        messages: messages
+          ? [prompt, ...messages.slice(-10)]
+          : [prompt, ...voiceHistoryMessages.slice(-10)],
         temperature: 0.1,
         stream: true,
       });
@@ -217,17 +225,15 @@ export async function POST(req: Request) {
           });
 
           // save message to voice
-          console.log(data, "message data", chatId);
+
           const response = await generateVoice(
             data.content,
             chatId,
             hashMessage(chatId + data.content)
           );
-
-          console.log(response, "here");
         },
       });
-      console.log(stream, "stream");
+
       return new StreamingTextResponse(stream);
     }
   } catch (error) {

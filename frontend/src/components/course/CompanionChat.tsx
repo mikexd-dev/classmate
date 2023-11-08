@@ -75,56 +75,8 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     return <span>Browser doesn't support speech recognition.</span>;
   }
 
-  const { complete, completion } = useCompletion({
-    api: "/api/chat",
-    body: {
-      chatId,
-    },
-    onResponse: (response) => {
-      // console.log("response", response);
-      // setQuiz(response.data.quiz);
-    },
-    onFinish: () => {
-      // console.log("finished ->>>", completion, messages[messages.length - 1]);
-      // if (completion !== "") {
-      //   setMessages([
-      //     ...messages,
-      //     {
-      //       id: messages[messages.length - 1].id + 1,
-      //       role: "assistant",
-      //       content: completion,
-      //     },
-      //   ]);
-      // }
-    },
-  });
-
   let prevState = snapshot(state);
   const snap = useSnapshot(state);
-
-  useEffect(() => {
-    const debouncedLogHi = debounce(async () => {
-      //TODO: terry this is like the only method i can figure out how to work using vercel ai, u can see if there is a better way, but it works now just without streaming
-      if (currentQuiz?.question === state.quizQnAns?.question && showAnswer) {
-        setLoadingQuizExplanation(true);
-
-        // api call to openAI completion
-        const completed = await complete(JSON.stringify(state.quizQnAns));
-        const newMessages2: any = [
-          ...messages,
-          {
-            id: messages[messages.length - 1].id + 1,
-            role: "assistant",
-            content: completed,
-          },
-        ];
-        setMessages([...newMessages2]);
-        setLoadingQuizExplanation(false);
-      }
-    }, 200);
-
-    debouncedLogHi();
-  }, [snap.quizQnAns]);
 
   const onboardingInfo = `
       Student's name: ${session?.user?.name.split(" ")[0]}
@@ -148,6 +100,31 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     initialMessages: data || [],
   });
 
+  const { complete, completion } = useCompletion({
+    api: "/api/chat",
+    body: {
+      chatId,
+      onboardingInfo: messages,
+    },
+    onResponse: (response) => {
+      // console.log("response", response);
+      // setQuiz(response.data.quiz);
+    },
+    onFinish: () => {
+      // console.log("finished ->>>", completion, messages[messages.length - 1]);
+      // if (completion !== "") {
+      //   setMessages([
+      //     ...messages,
+      //     {
+      //       id: messages[messages.length - 1].id + 1,
+      //       role: "assistant",
+      //       content: completion,
+      //     },
+      //   ]);
+      // }
+    },
+  });
+
   // scroll to bottom when new message is added
   React.useEffect(() => {
     const messageContainer = document.getElementById("message-container");
@@ -160,32 +137,15 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     if (session?.user?.buddy === "Gang") setProfile(profiles[0]);
     if (session?.user?.buddy === "Mike") setProfile(profiles[1]);
     if (session?.user?.buddy === "Terry") setProfile(profiles[2]);
-
-    // const generateVoice = async (messageId: string) => {
-    //   console.log({
-    //     messageId,
-    //     message: messages[messages.length - 1]?.content,
-    //     chatId,
-    //   });
-    //   const response = await axios.post("/api/chat/voice", {
-    //     messageId,
-    //     message: messages[messages.length - 1]?.content,
-    //     chatId,
-    //   });
-    //   console.log(response, "data");
-    //   setAudio(response?.data.voice);
-    // };
-    // if (messages.length > 0) generateVoice(messages[messages.length - 1]?.id);
   }, [messages, session?.user, chatId]);
 
   useEffect(() => {
-    console.log("transcript", transcript);
     const voiceSend = async () => {
       const message = transcript;
 
       if (message.toLowerCase().includes("send message")) {
         resetTranscript();
-        console.log("here");
+
         const newMessages1: any = [
           ...messages,
           {
@@ -200,7 +160,9 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
         ];
         setMessages([...newMessages1]);
         setLoadingQuizExplanation(true);
-        const completed = await complete(message);
+        const completed = await complete(
+          transcript.toLowerCase().replace("send message", "").trim()
+        );
 
         const newMessages2: any = [
           ...newMessages1,
