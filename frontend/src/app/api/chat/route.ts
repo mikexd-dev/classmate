@@ -40,10 +40,11 @@ export async function POST(req: Request) {
     if (_chats.length != 1) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
+    // console.log(onboardingInfo);
 
     // For injecting quiz and student's answer into chatbot
     // TODO: i created this to try the quiz prompt injection, through useComplete, they use prompt, but i think is not the right way to do it
-    if (promptQuiz && typeof promptQuiz === "object") {
+    if (promptQuiz && typeof onboardingInfo === "string") {
       const prompt = {
         role: "system",
         content: `
