@@ -31,6 +31,8 @@ export async function POST(req: Request) {
       prompt: promptQuiz,
     } = await req.json();
 
+    console.log(messages, chatId, onboardingInfo, promptQuiz, "messages");
+
     const _chats = await prisma.chats.findMany({
       where: {
         id: chatId,
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
 
     // For injecting quiz and student's answer into chatbot
     // TODO: i created this to try the quiz prompt injection, through useComplete, they use prompt, but i think is not the right way to do it
-    if (promptQuiz) {
+    if (promptQuiz && typeof promptQuiz === "object") {
       const prompt = {
         role: "system",
         content: `
@@ -129,8 +131,18 @@ export async function POST(req: Request) {
       });
       return new StreamingTextResponse(stream);
     } else {
-      // For normal user input to chatbot
-      const lastMessage = messages[messages.length - 1];
+      let lastMessage: any;
+      // check if prompt is object -> voice
+      if (promptQuiz && typeof promptQuiz === "string") {
+        lastMessage = {
+          role: "user",
+          content: promptQuiz,
+        };
+      } else {
+        // For normal user input to chatbot
+        lastMessage = messages[messages.length - 1];
+      }
+
       const context = await getContext(lastMessage.content);
 
       const prompt = {
@@ -163,6 +175,7 @@ export async function POST(req: Request) {
         - If discussions veer off-topic, gently steer back to the relevant science concepts
         - Avoid jargon and high-level terminology not covered in the secondary science syllabus
         - Use metaphors and analogies that are familiar to the everyday experiences of a young teenager
+        - Avoid prefacing the message with 'Student:' and 'AI:'
       `,
       };
 
@@ -177,7 +190,7 @@ export async function POST(req: Request) {
       const response = await openai.createChatCompletion({
         // model: "gpt-3.5-turbo-16k",
         model: "gpt-4",
-        messages: [prompt, ...messages.slice(-10)],
+        messages: messages ? [prompt, ...messages.slice(-10)] : [prompt],
         temperature: 0.1,
         stream: true,
       });

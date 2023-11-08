@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Input } from "../ui/input";
 import { useChat, useCompletion } from "ai/react";
 import { Button } from "../ui/button";
-import { Send } from "lucide-react";
+import { Send, Mic } from "lucide-react";
 import MessageList from "../MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -19,6 +19,10 @@ import { state } from "./MainQuiz";
 import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
 import { checkFileExist } from "@/lib/s3";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+import { cn } from "@/lib";
 
 const profiles = [
   {
@@ -59,6 +63,17 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
       return response.data;
     },
   });
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  if (!browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition.</span>;
+  }
 
   const { complete, completion } = useCompletion({
     api: "/api/chat",
@@ -163,6 +178,46 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     // if (messages.length > 0) generateVoice(messages[messages.length - 1]?.id);
   }, [messages, session?.user, chatId]);
 
+  useEffect(() => {
+    console.log("transcript", transcript);
+    const voiceSend = async () => {
+      const message = transcript;
+
+      if (message.toLowerCase().includes("send message")) {
+        resetTranscript();
+        console.log("here");
+        const newMessages1: any = [
+          ...messages,
+          {
+            id: messages[messages.length - 1].id + 1,
+            role: "user",
+            // remove hey classmate from transcript
+            content: transcript
+              .toLowerCase()
+              .replace("send message", "")
+              .trim(),
+          },
+        ];
+        setMessages([...newMessages1]);
+        setLoadingQuizExplanation(true);
+        const completed = await complete(message);
+
+        const newMessages2: any = [
+          ...newMessages1,
+          {
+            id: newMessages1[newMessages1.length - 1].id + 1,
+            role: "assistant",
+            content: completed,
+          },
+        ];
+        setMessages([...newMessages2]);
+        setLoadingQuizExplanation(false);
+        setAudio(true);
+      }
+    };
+    voiceSend();
+  }, [transcript]);
+
   return (
     <AnimatePresence>
       <motion.div
@@ -210,13 +265,14 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
             chatId={chatId.toString()}
             isRendering={isMessageLoading}
           />
+
           {messages[messages.length - 1]?.role === "assistant" &&
             !(isLoadingQuizExplanation || isMessageLoading) && (
               <div>
                 <audio
                   id="playaudio"
-                  controls
-                  // autoPlay={true}
+                  // controls
+                  autoPlay={audio}
                   className="pr-10"
                   src={`https://aiclassmate.s3.ap-southeast-1.amazonaws.com/voice/${chatId}/${hashMessage(
                     chatId + messages[messages.length - 1]?.content
@@ -249,11 +305,26 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
 
             <div className="flex">
               <Input
-                value={input}
+                value={input || transcript}
                 onChange={handleInputChange}
                 placeholder="Ask any question..."
                 className="w-full"
               />
+              <div>
+                <Button
+                  className={cn("bg-black rounded-full ml-2 p-1 px-3", {
+                    "bg-red-600 text-white": listening,
+                    "bg-black text-white": !listening,
+                  })}
+                  onClick={
+                    !listening
+                      ? SpeechRecognition.startListening
+                      : SpeechRecognition.stopListening
+                  }
+                >
+                  <Mic className="h-4 w-4" />
+                </Button>
+              </div>
               <Button className="bg-purple-600 ml-2">
                 <Send className="h-4 w-4" />
               </Button>
