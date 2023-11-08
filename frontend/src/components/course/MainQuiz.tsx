@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import ScoreSVG from "../../../public/score.svg";
 import { proxy, useSnapshot } from "valtio";
-import LoadingComponent from "@/app/course/[...slug]/loading";
+import LoadingComponent from "@/app/dashboard/loading";
 
 type Props = {
   //   chapter: Chapter;

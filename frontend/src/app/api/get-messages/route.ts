@@ -13,5 +13,6 @@ export const POST = async (req: Request) => {
       chatId: chatId,
     },
   });
+  // console.log(_messages, "messages");
   return NextResponse.json(_messages);
 };

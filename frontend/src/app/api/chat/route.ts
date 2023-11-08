@@ -6,6 +6,12 @@ import { getContext } from "@/lib/context";
 import { NextResponse } from "next/server";
 import url from "url";
 import { getAuthSession } from "@/lib/auth";
+import axios from "axios";
+import { checkFileExist, uploadVoice } from "@/lib/s3";
+
+import OpenAI from "openai";
+import { hashMessage } from "ethers";
+const openai_voice = new OpenAI();
 
 export const runtime = "edge";
 
@@ -104,13 +110,21 @@ export async function POST(req: Request) {
         },
         onCompletion: async (completion) => {
           // save ai message into db
-          await prisma.messages.create({
+          const data = await prisma.messages.create({
             data: {
               chatId,
               content: completion,
               role: "assistant",
             },
           });
+
+          // save message to voice
+          console.log(data, "message data", chatId);
+          const response = await generateVoice(
+            data.content,
+            chatId,
+            hashMessage(chatId + data.content)
+          );
         },
       });
       return new StreamingTextResponse(stream);
@@ -181,18 +195,55 @@ export async function POST(req: Request) {
         },
         onCompletion: async (completion) => {
           // save ai message into db
-          await prisma.messages.create({
+          const data = await prisma.messages.create({
             data: {
               chatId,
               content: completion,
               role: "assistant",
             },
           });
+
+          // save message to voice
+          console.log(data, "message data", chatId);
+          const response = await generateVoice(
+            data.content,
+            chatId,
+            hashMessage(chatId + data.content)
+          );
+
+          console.log(response, "here");
         },
       });
+      console.log(stream, "stream");
       return new StreamingTextResponse(stream);
     }
   } catch (error) {
     console.error(error);
   }
 }
+
+const generateVoice = async (
+  message: string,
+  chatId: string,
+  messageId: string
+) => {
+  try {
+    await checkFileExist(chatId, messageId);
+    return {
+      voice: `https://aiclassmate.s3.ap-southeast-1.amazonaws.com/voice/${chatId}/${messageId}.mp3`,
+    };
+  } catch (err) {
+    console.log(err, "err");
+    const mp3 = await openai_voice.audio.speech.create({
+      model: "tts-1",
+      input: message,
+      voice: "alloy",
+    });
+
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    await uploadVoice(buffer, chatId, messageId);
+    return {
+      voice: `https://aiclassmate.s3.ap-southeast-1.amazonaws.com/voice/${chatId}/${messageId}.mp3`,
+    };
+  }
+};

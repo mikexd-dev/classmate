@@ -6,6 +6,7 @@ import { visit } from "unist-util-visit";
 
 import "highlight.js/styles/github.css";
 import remarkBreaks from "remark-breaks";
+import { hashMessage } from "ethers";
 
 function customNotesPlugin() {
   return function transformer(tree: any) {
@@ -25,7 +26,14 @@ function customNotesPlugin() {
     visit(tree, ["containerDirective"], visitor);
   };
 }
-const MarkdownMemo = ({ markdown }: any) => {
+const MarkdownMemo = ({
+  markdown,
+  messageId,
+  chatId,
+  messageRole,
+  message,
+  isRendering,
+}: any) => {
   const ReactMarkdownMemo = React.useMemo(() => {
     const headerParser = ({ node, className, children, ...props }: any) => {
       if (children === undefined) {
@@ -43,31 +51,33 @@ const MarkdownMemo = ({ markdown }: any) => {
       );
     };
     const ComponentConstructor = () => (
-      <Markdown
-        className={"overflow-y-auto max-w-[250px] overflow-x-hidden"}
-        children={markdown.replace(/\n/gi, "&nbsp; \n")}
-        remarkPlugins={[customNotesPlugin, remarkBreaks]}
-        // rehypePlugins={[rehypeHighlight]}
-        components={{
-          h1: headerParser,
-          h2: headerParser,
-          h3: headerParser,
-          h4: headerParser,
-          h5: headerParser,
-          h6: headerParser,
-          img({ node, className, children, ...props }) {
-            const { src, alt, ...other } = props;
-            return <img src={src} alt={alt} {...other} {...{ className }} />;
-          },
-          iframe({ node, className, children, ...props }) {
-            return (
-              <iframe title="unique" {...props}>
-                {children}
-              </iframe>
-            );
-          },
-        }}
-      />
+      <div>
+        <Markdown
+          className={"overflow-y-auto max-w-[250px] overflow-x-hidden"}
+          children={markdown.replace(/\n/gi, "&nbsp; \n")}
+          remarkPlugins={[customNotesPlugin, remarkBreaks]}
+          // rehypePlugins={[rehypeHighlight]}
+          components={{
+            h1: headerParser,
+            h2: headerParser,
+            h3: headerParser,
+            h4: headerParser,
+            h5: headerParser,
+            h6: headerParser,
+            img({ node, className, children, ...props }) {
+              const { src, alt, ...other } = props;
+              return <img src={src} alt={alt} {...other} {...{ className }} />;
+            },
+            iframe({ node, className, children, ...props }) {
+              return (
+                <iframe title="unique" {...props}>
+                  {children}
+                </iframe>
+              );
+            },
+          }}
+        />
+      </div>
     );
     return ComponentConstructor;
   }, [markdown]);

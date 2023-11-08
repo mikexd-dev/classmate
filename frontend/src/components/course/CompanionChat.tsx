@@ -14,10 +14,11 @@ import { useSession } from "next-auth/react";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { subscribe, useSnapshot, snapshot } from "valtio";
 import { debounce } from "lodash";
-import { uuidV4 } from "ethers";
+import { hashMessage, uuidV4 } from "ethers";
 import { state } from "./MainQuiz";
 import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
+import { checkFileExist } from "@/lib/s3";
 
 const profiles = [
   {
@@ -44,6 +45,7 @@ type Props = { chatId: number; currentQuiz: any; showAnswer: boolean };
 
 const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
   const { data: session } = useSession();
+  const [audio, setAudio] = React.useState<any>(null);
   const [isLoadingQuizExplanation, setLoadingQuizExplanation] =
     React.useState(false);
   const [quiz, setQuiz] = React.useState<any>(null);
@@ -143,7 +145,23 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     if (session?.user?.buddy === "Gang") setProfile(profiles[0]);
     if (session?.user?.buddy === "Mike") setProfile(profiles[1]);
     if (session?.user?.buddy === "Terry") setProfile(profiles[2]);
-  }, [messages, session?.user]);
+
+    // const generateVoice = async (messageId: string) => {
+    //   console.log({
+    //     messageId,
+    //     message: messages[messages.length - 1]?.content,
+    //     chatId,
+    //   });
+    //   const response = await axios.post("/api/chat/voice", {
+    //     messageId,
+    //     message: messages[messages.length - 1]?.content,
+    //     chatId,
+    //   });
+    //   console.log(response, "data");
+    //   setAudio(response?.data.voice);
+    // };
+    // if (messages.length > 0) generateVoice(messages[messages.length - 1]?.id);
+  }, [messages, session?.user, chatId]);
 
   return (
     <AnimatePresence>
@@ -186,8 +204,26 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
           className="rounded-3xl overflow-scroll bg-white absolute top-[22%] w-[340px] h-[500px] shadow-xl flex flex-col items-end justify-between"
           id="message-container"
         >
-          <MessageList messages={messages} isLoading={isLoading} />
-
+          <MessageList
+            messages={messages}
+            isLoading={isLoading}
+            chatId={chatId.toString()}
+            isRendering={isMessageLoading}
+          />
+          {messages[messages.length - 1]?.role === "assistant" &&
+            !(isLoadingQuizExplanation || isMessageLoading) && (
+              <div>
+                <audio
+                  id="playaudio"
+                  controls
+                  // autoPlay={true}
+                  className="pr-10"
+                  src={`https://aiclassmate.s3.ap-southeast-1.amazonaws.com/voice/${chatId}/${hashMessage(
+                    chatId + messages[messages.length - 1]?.content
+                  )}.mp3`}
+                ></audio>
+              </div>
+            )}
           <form
             onSubmit={handleSubmit}
             className="sticky bottom-0 w-full inset-x-0 px-4 pb-4 py-2 bg-white"
