@@ -125,6 +125,30 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     },
   });
 
+  useEffect(() => {
+    const debouncedLogHi = debounce(async () => {
+      //TODO: terry this is like the only method i can figure out how to work using vercel ai, u can see if there is a better way, but it works now just without streaming
+      if (currentQuiz?.question === state.quizQnAns?.question && showAnswer) {
+        setLoadingQuizExplanation(true);
+
+        // api call to openAI completion
+        const completed = await complete(JSON.stringify(state.quizQnAns));
+        const newMessages2: any = [
+          ...messages,
+          {
+            id: messages[messages.length - 1].id + 1,
+            role: "assistant",
+            content: completed,
+          },
+        ];
+        setMessages([...newMessages2]);
+        setLoadingQuizExplanation(false);
+      }
+    }, 200);
+
+    debouncedLogHi();
+  }, [snap.quizQnAns]);
+
   // scroll to bottom when new message is added
   React.useEffect(() => {
     const messageContainer = document.getElementById("message-container");
