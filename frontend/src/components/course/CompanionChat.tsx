@@ -258,7 +258,9 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
                 <audio
                   id="playaudio"
                   // controls
-                  autoPlay={audio}
+                  autoPlay={
+                    audio || isLoadingQuizExplanation || isMessageLoading
+                  }
                   className="pr-10"
                   src={`https://aiclassmate.s3.ap-southeast-1.amazonaws.com/voice/${chatId}/${hashMessage(
                     chatId + messages[messages.length - 1]?.content
