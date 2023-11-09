@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { useChat, useCompletion } from "ai/react";
 import { Button } from "../ui/button";
-import { Send, Mic } from "lucide-react";
+import { Send, Mic, Play, Pause } from "lucide-react";
 import MessageList from "../MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -23,6 +23,9 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import { cn } from "@/lib";
+import { ReactMic } from "react-mic";
+import { Speech } from "openai/resources/audio/speech.mjs";
+import AudioPlayer from "./AudioPlayer";
 
 const profiles = [
   {
@@ -125,22 +128,31 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     },
   });
 
+  const listenContinuously = () => {
+    console.log("here");
+    SpeechRecognition.startListening({
+      continuous: true,
+      language: "en-GB",
+    });
+  };
+
   useEffect(() => {
     const debouncedLogHi = debounce(async () => {
       //TODO: terry this is like the only method i can figure out how to work using vercel ai, u can see if there is a better way, but it works now just without streaming
       if (currentQuiz?.question === state.quizQnAns?.question && showAnswer) {
         setLoadingQuizExplanation(true);
-
+        // console.log("here ", JSON.stringify(state.quizQnAns));
         // api call to openAI completion
         const completed = await complete(JSON.stringify(state.quizQnAns));
         const newMessages2: any = [
           ...messages,
           {
-            id: messages[messages.length - 1].id + 1,
+            id: messages[messages.length - 1]?.id + 1,
             role: "assistant",
             content: completed,
           },
         ];
+        // console.log(newMessages2, "newMessage");
         setMessages([...newMessages2]);
         setLoadingQuizExplanation(false);
       }
@@ -161,19 +173,21 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
     if (session?.user?.buddy === "Gang") setProfile(profiles[0]);
     if (session?.user?.buddy === "Mike") setProfile(profiles[1]);
     if (session?.user?.buddy === "Terry") setProfile(profiles[2]);
+    SpeechRecognition.stopListening();
   }, [messages, session?.user, chatId]);
 
   useEffect(() => {
     const voiceSend = async () => {
       const message = transcript;
-
+      // console.log("here");
       if (message.toLowerCase().includes("send message")) {
         resetTranscript();
-
+        console.log(messages, "messages");
+        SpeechRecognition.stopListening();
         const newMessages1: any = [
           ...messages,
           {
-            id: messages[messages.length - 1].id + 1,
+            id: messages[messages.length - 1]?.id + 1,
             role: "user",
             // remove hey classmate from transcript
             content: transcript
@@ -187,6 +201,8 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
         const completed = await complete(
           transcript.toLowerCase().replace("send message", "").trim()
         );
+
+        console.log(completed, "completed");
 
         const newMessages2: any = [
           ...newMessages1,
@@ -254,18 +270,12 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
 
           {messages[messages.length - 1]?.role === "assistant" &&
             !(isLoadingQuizExplanation || isMessageLoading) && (
-              <div>
-                <audio
-                  id="playaudio"
-                  // controls
-                  autoPlay={
-                    audio || isLoadingQuizExplanation || isMessageLoading
-                  }
-                  className="pr-10"
+              <div className="w-full flex flex-start px-5">
+                <AudioPlayer
                   src={`https://aiclassmate.s3.ap-southeast-1.amazonaws.com/voice/${chatId}/${hashMessage(
                     chatId + messages[messages.length - 1]?.content
                   )}.mp3`}
-                ></audio>
+                />
               </div>
             )}
           <form
@@ -300,10 +310,13 @@ const CompanionChat = ({ chatId, currentQuiz, showAnswer }: Props) => {
               />
               <div>
                 <div
-                  className={cn("bg-black rounded-full ml-2 p-3", {
-                    "bg-red-600 text-white": listening,
-                    "bg-black text-white": !listening,
-                  })}
+                  className={cn(
+                    "bg-black rounded-full ml-2 p-3 cursor-pointer",
+                    {
+                      "bg-red-600 text-white": listening,
+                      "bg-black text-white": !listening,
+                    }
+                  )}
                   onClick={
                     !listening
                       ? SpeechRecognition.startListening

@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
     }
     // console.log(onboardingInfo);
-
+    // console.log(promptQuiz && typeof onboardingInfo === "string", "1");
     // For injecting quiz and student's answer into chatbot
     // TODO: i created this to try the quiz prompt injection, through useComplete, they use prompt, but i think is not the right way to do it
     if (promptQuiz && typeof onboardingInfo === "string") {
@@ -132,17 +132,28 @@ export async function POST(req: Request) {
     } else {
       let lastMessage: any;
       // check if prompt is object -> voice
+      // console.log(promptQuiz && typeof promptQuiz === "string", "2");
+      let voiceHistoryMessages = [];
       if (promptQuiz && typeof promptQuiz === "string") {
-        lastMessage = {
-          role: "user",
-          content: promptQuiz,
-        };
+        // console.log(onboardingInfo);
+        // strip away createdAt, id and userId from objects in onboardingInfo array
+        // if (onboardingInfo.length === 0)
+        //   lastMessage = { content: promptQuiz, role: "user" };
+        // else {
+        voiceHistoryMessages =
+          !messages &&
+          onboardingInfo
+            .slice(-10)
+            .map(({ content, role }: any) => ({ content, role }));
+        voiceHistoryMessages.push({ content: promptQuiz, role: "user" });
+        lastMessage = { content: promptQuiz, role: "user" };
       } else {
         // For normal user input to chatbot
         lastMessage = messages[messages.length - 1];
       }
-
+      // console.log(lastMessage, "lastMessage");
       const context = await getContext(lastMessage.content);
+      // console.log(context, "context");
 
       const prompt = {
         role: "system",
@@ -169,6 +180,8 @@ export async function POST(req: Request) {
         6. When a student says he/she wants to learn something, provide a breakdown/outline using Singapore's lower secondary school science syllabus and have them respond before you provide any explanations
         7. Tailor content complexity to suit the understanding levels of Secondary 1 and 2 students
         8. Maintain relevance by ensuring all discussions are pertinent to the Singapore lower secondary school science syllabus
+        9. Try to answer the learner's specific question first before going deeper into the topic
+        10. Try to keep the reply short and concise, and avoid long-winded explanations, prompt the user to check if he wants to learn more
 
         Guidelines for Interactions:
         - If discussions veer off-topic, gently steer back to the relevant science concepts
@@ -187,12 +200,7 @@ export async function POST(req: Request) {
        *
        **/
 
-      // strip away createdAt, id and userId from objects in onboardingInfo array
-      const voiceHistoryMessages =
-        !messages &&
-        onboardingInfo
-          .slice(-10)
-          .map(({ content, role }: any) => ({ content, role }));
+      // console.log(voiceHistoryMessages, "voiceHistoryMessages");
 
       const response = await openai.createChatCompletion({
         // model: "gpt-3.5-turbo-16k",
